@@ -242,7 +242,7 @@ class TestRenderEmailHtmlContent:
     @pytest.mark.unit
     def test_footer_present(self):
         html = render_email_html(_make_briefing())
-        assert "News Radar" in html
+        assert "FeedFlow AI" in html
         # Footer should contain the date
         assert "2026-07-19" in html
 

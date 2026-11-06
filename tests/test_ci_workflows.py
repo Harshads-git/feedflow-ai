@@ -210,7 +210,7 @@ class TestDocsBootstrap:
     def test_docs_index_has_title(self):
         content = DOCS_INDEX.read_text(encoding="utf-8")
         assert "<title>" in content
-        assert "News Radar" in content
+        assert "FeedFlow AI" in content
 
     @pytest.mark.unit
     def test_docs_index_has_github_link(self):

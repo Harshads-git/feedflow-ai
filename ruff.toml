@@ -1,7 +1,7 @@
 # ruff.toml
 # =========
 # Ruff is an extremely fast Python linter and formatter written in Rust.
-# This file configures rules, ignores, and per-file overrides for News Radar.
+# This file configures rules, ignores, and per-file overrides for FeedFlow AI.
 #
 # Docs: https://docs.astral.sh/ruff/configuration/
 # Rule reference: https://docs.astral.sh/ruff/rules/

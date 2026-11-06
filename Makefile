@@ -1,5 +1,5 @@
 # ==============================================================================
-# Makefile — News Radar Development Commands
+# Makefile — FeedFlow AI Development Commands
 # ==============================================================================
 # Usage: make <target>
 # Run `make help` to see all available targets.
@@ -27,7 +27,7 @@ RESET := \033[0m
 
 help: ## Show this help message
 	@echo ""
-	@echo "$(CYAN)📡 News Radar — Development Commands$(RESET)"
+	@echo "$(CYAN)📡 FeedFlow AI — Development Commands$(RESET)"
 	@echo "======================================"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "$(GREEN)  %-20s$(RESET) %s\n", $$1, $$2}'
@@ -87,7 +87,7 @@ coverage: ## Generate HTML coverage report and open it
 # Application
 # ---------------------------------------------------------------------------
 
-run: ## Run the full news radar pipeline
+run: ## Run the full FeedFlow AI pipeline
 	uv run python -m src.main --run
 
 run-dry: ## Run pipeline in dry-run mode (no saves, no notifications)

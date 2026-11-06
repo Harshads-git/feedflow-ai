@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import json
 import tempfile
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -416,7 +416,7 @@ class TestScoreHistoryLoad:
         h.path.parent.mkdir(parents=True, exist_ok=True)
         with h.path.open("a") as f:
             f.write(json.dumps(old_entry) + "\n")
-        h.append(_scored(ai_score=8), composite_score=7.0, run_date="2026-07-10")
+        h.append(_scored(ai_score=8), composite_score=7.0, run_date=date.today().isoformat())
 
         # load with days=7 should only return recent entry
         recent = h.load(days=7)
@@ -445,7 +445,6 @@ class TestScoreHistorySourceStats:
             h.append(
                 _scored(ai_score=7, source_id="hn-top"),
                 composite_score=score,
-                run_date="2026-07-10",
             )
         stats = h.source_stats()
         assert "hn-top" in stats
@@ -455,8 +454,8 @@ class TestScoreHistorySourceStats:
     @pytest.mark.unit
     def test_multiple_sources_tracked_separately(self, tmp_path):
         h = ScoreHistory(tmp_path)
-        h.append(_scored(source_id="hn-top"), composite_score=8.0, run_date="2026-07-10")
-        h.append(_scored(source_id="r-prog"), composite_score=5.0, run_date="2026-07-10")
+        h.append(_scored(source_id="hn-top"), composite_score=8.0)
+        h.append(_scored(source_id="r-prog"), composite_score=5.0)
         stats = h.source_stats()
         assert "hn-top" in stats
         assert "r-prog" in stats
@@ -470,7 +469,6 @@ class TestScoreHistoryTopicTrend:
         h.append(
             ScoredItem(item=_item(), ai_score=7, ai_topics=["Python"]),
             composite_score=7.0,
-            run_date="2026-07-10",
         )
         result = h.topic_trend("Rust", days=7)
         assert result == {}
@@ -479,28 +477,30 @@ class TestScoreHistoryTopicTrend:
     def test_matching_topic_returns_daily_average(self, tmp_path):
         h = ScoreHistory(tmp_path)
         scored = ScoredItem(item=_item(), ai_score=8, ai_topics=["AI", "OpenAI"])
-        h.append(scored, composite_score=8.0, run_date="2026-07-10")
-        h.append(scored, composite_score=6.0, run_date="2026-07-10")
+        today = date.today().isoformat()
+        h.append(scored, composite_score=8.0, run_date=today)
+        h.append(scored, composite_score=6.0, run_date=today)
         result = h.topic_trend("AI", days=30)
-        assert "2026-07-10" in result
-        assert result["2026-07-10"] == 7.0
+        assert today in result
+        assert result[today] == 7.0
 
     @pytest.mark.unit
     def test_topic_match_is_case_insensitive(self, tmp_path):
         h = ScoreHistory(tmp_path)
         scored = ScoredItem(item=_item(), ai_score=7, ai_topics=["Python"])
-        h.append(scored, composite_score=7.0, run_date="2026-07-10")
-        assert "2026-07-10" in h.topic_trend("python", days=30)
-        assert "2026-07-10" in h.topic_trend("PYTHON", days=30)
+        today = date.today().isoformat()
+        h.append(scored, composite_score=7.0, run_date=today)
+        assert today in h.topic_trend("python", days=30)
+        assert today in h.topic_trend("PYTHON", days=30)
 
 
 class TestScoreHistoryTopSources:
     @pytest.mark.unit
     def test_top_sources_sorted_by_mean(self, tmp_path):
         h = ScoreHistory(tmp_path)
-        h.append(_scored(source_id="a"), composite_score=9.0, run_date="2026-07-10")
-        h.append(_scored(source_id="b"), composite_score=6.0, run_date="2026-07-10")
-        h.append(_scored(source_id="c"), composite_score=7.5, run_date="2026-07-10")
+        h.append(_scored(source_id="a"), composite_score=9.0)
+        h.append(_scored(source_id="b"), composite_score=6.0)
+        h.append(_scored(source_id="c"), composite_score=7.5)
         top = h.top_sources(n=3)
         assert top[0][0] == "a"
         assert top[-1][0] == "b"
@@ -509,6 +509,6 @@ class TestScoreHistoryTopSources:
     def test_top_sources_limited_to_n(self, tmp_path):
         h = ScoreHistory(tmp_path)
         for i, src in enumerate(["a", "b", "c", "d", "e"]):
-            h.append(_scored(source_id=src), composite_score=float(i), run_date="2026-07-10")
+            h.append(_scored(source_id=src), composite_score=float(i))
         top = h.top_sources(n=3)
         assert len(top) == 3

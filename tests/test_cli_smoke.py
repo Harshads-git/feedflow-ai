@@ -54,7 +54,7 @@ class TestCLIParser:
     def test_version_flag_prints_version(self):
         result = run_cli("--version")
         assert result.returncode == 0
-        assert "news-radar" in result.stdout
+        assert "feedflow-ai" in result.stdout
         # Should contain a version number like 0.1.0
         assert any(char.isdigit() for char in result.stdout)
 

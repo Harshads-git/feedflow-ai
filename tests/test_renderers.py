@@ -130,7 +130,7 @@ class TestRenderMarkdown:
     @pytest.mark.unit
     def test_output_has_h1_headline(self):
         md = render_markdown(make_briefing())
-        assert md.startswith("# News Radar")
+        assert md.startswith("# FeedFlow AI")
 
     @pytest.mark.unit
     def test_output_contains_executive_summary(self):
@@ -169,7 +169,7 @@ class TestRenderMarkdown:
     def test_empty_briefing_has_footer(self):
         briefing = Briefing(date="2026-06-21", generated_at=datetime.now(timezone.utc))
         md = render_markdown(briefing)
-        assert "News Radar" in md
+        assert "FeedFlow AI" in md
 
     @pytest.mark.unit
     def test_score_badge_format(self):
@@ -262,7 +262,7 @@ class TestRenderHtml:
     def test_output_has_footer(self):
         html_str = render_html(make_briefing())
         assert "page-footer" in html_str
-        assert "News Radar" in html_str
+        assert "FeedFlow AI" in html_str
 
     @pytest.mark.unit
     def test_score_color_green_for_high_score(self):
@@ -365,7 +365,10 @@ class TestGitHubPagesWriter:
     def test_write_returns_four_paths(self, tmp_path):
         writer = GitHubPagesWriter(tmp_path)
         outputs = writer.write(make_briefing())
-        assert len(outputs) == 4
+        assert len(outputs) >= 4
+        assert "daily_html" in outputs
+        assert "index_html" in outputs
+        assert "archive_html" in outputs
         assert all(isinstance(v, Path) for v in outputs.values())
 
     @pytest.mark.unit

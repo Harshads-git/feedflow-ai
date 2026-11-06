@@ -155,7 +155,7 @@ class RetryBudget:
         self._path = self._data_dir / _BUDGET_FILENAME
         self.provider = provider_name
         self._max_concurrency = max_concurrency
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
 
         # Rolling window: list of bools (True=success, False=failure)
         self._window: list[bool] = []

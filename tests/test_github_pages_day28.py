@@ -67,6 +67,16 @@ def _make_briefing(
     return briefing
 
 
+@pytest.fixture(autouse=True)
+def _restore_renderers():
+    import src.renderers.github_pages as gp
+    orig_html = gp.render_html
+    orig_md = gp.render_markdown
+    yield
+    gp.render_html = orig_html
+    gp.render_markdown = orig_md
+
+
 def _patched_writer(docs_dir: Path) -> GitHubPagesWriter:
     """Return a GitHubPagesWriter with render calls stubbed out."""
     import src.renderers.github_pages as gp

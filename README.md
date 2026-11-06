@@ -2,7 +2,7 @@
 
 > *I was spending 45 minutes every morning reading Hacker News, Reddit, and various tech blogs just to figure out what was worth reading. So I built this.*
 
-A personal AI-powered news briefing pipeline that fetches stories from the sources I actually care about, scores them by relevance to my interests, summarizes the good ones, and delivers a clean daily briefing â€” automatically, every morning.
+A personal AI-powered news briefing pipeline that fetches stories from the sources I actually care about, scores them by relevance to my interests, summarizes the good ones, and delivers a clean daily briefing — automatically, every morning.
 
 Built over **30 days, 1 hour/day** as a personal project to actually ship something end-to-end with real AI tooling.
 
@@ -15,7 +15,7 @@ Built over **30 days, 1 hour/day** as a personal project to actually ship someth
 
 ## Live Briefing
 
-â†’ **[harshads-git.github.io/feedflow-ai](https://harshads-git.github.io/feedflow-ai)**
+→ **[harshads-git.github.io/feedflow-ai](https://harshads-git.github.io/feedflow-ai)**
 
 Includes topic index, per-topic archives, and a client-side search bar.
 *(Updates daily at 07:00 UTC / 12:30 IST)*
@@ -27,8 +27,8 @@ Includes topic index, per-topic archives, and a client-side search bar.
 Every day at 07:00 UTC it:
 
 1. **Fetches** from Hacker News (top + new), Reddit (r/MachineLearning, r/LocalLLaMA, r/Python, r/devops), and 8+ RSS feeds (OpenAI, DeepMind, HuggingFace, TechCrunch, Ars Technica, GitHub Blog)
-2. **Deduplicates** â€” URL normalisation + Jaccard title similarity to remove near-duplicates
-3. **Scores** each story 0â€“10 using GPT-4o-mini against your configured interests â€” cache-first for speed
+2. **Deduplicates** — URL normalisation + Jaccard title similarity to remove near-duplicates
+3. **Scores** each story 0–10 using GPT-4o-mini against your configured interests — cache-first for speed
 4. **Summarizes** stories above the threshold: 3-paragraph summary, key takeaways, AI-generated headline
 5. **Enriches** each story with live web context via DuckDuckGo before summarising
 6. **Builds** a briefing with an AI-generated executive summary and topic clustering
@@ -41,7 +41,7 @@ The whole run takes about 45 seconds and costs roughly **$0.02** in API credits.
 
 ## Why I built this from scratch
 
-I tried existing tools â€” RSS aggregators, news apps, AI newsletter services. None of them let me control:
+I tried existing tools — RSS aggregators, news apps, AI newsletter services. None of them let me control:
 - *Which* sources get fetched
 - *How* relevance is scored (my interests, not an algorithm's)
 - *Where* the output goes
@@ -64,7 +64,7 @@ feedflow-ai --setup
 
 # Or configure manually
 cp .env.example .env
-# Edit .env â€” add your AI key and interests
+# Edit .env — add your AI key and interests
 
 # Validate setup
 feedflow-ai --check
@@ -83,7 +83,7 @@ feedflow-ai --run
 Everything lives in `.env`:
 
 ```env
-# Required â€” at least one AI key
+# Required — at least one AI key
 OPENAI_API_KEY=sk-...
 # GEMINI_API_KEY=...
 # ANTHROPIC_API_KEY=...
@@ -108,14 +108,14 @@ EMAIL_TO=you@gmail.com
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
 ```
 
-Sources are configured in `data/sources.json` â€” enable/disable any source and set per-source fetch limits.
+Sources are configured in `data/sources.json` — enable/disable any source and set per-source fetch limits.
 
 ---
 
 ## CLI Reference
 
 ```
-feedflow-ai --run              Full pipeline (fetch â†’ score â†’ summarize â†’ deliver)
+feedflow-ai --run              Full pipeline (fetch → score → summarize → deliver)
 feedflow-ai --dry-run          Run pipeline but skip saving and delivery
 feedflow-ai --setup            Interactive setup wizard
 feedflow-ai --status           Last run info + configuration summary
@@ -144,36 +144,36 @@ feedflow-ai --dry-run --sources custom.json Test with a different sources file
 ```
 sources.json
     â†“
-[FETCH] â†’ RSS / HN API / Reddit / GitHub (concurrent, async)
+[FETCH] → RSS / HN API / Reddit / GitHub (concurrent, async)
     â†“
-[DEDUP] â†’ URL normalise + Jaccard title similarity
+[DEDUP] → URL normalise + Jaccard title similarity
     â†“
-[SCORE] â†’ AI scores each story 0â€“10 (cache-first; circuit breaker + retry budget)
+[SCORE] → AI scores each story 0–10 (cache-first; circuit breaker + retry budget)
     â†“
-[ENRICH] â†’ DuckDuckGo web context per story
+[ENRICH] → DuckDuckGo web context per story
     â†“
-[SUMMARIZE] â†’ AI: 3-paragraph summary + key points + AI headline + topic labels
+[SUMMARIZE] → AI: 3-paragraph summary + key points + AI headline + topic labels
     â†“
-[BUILD] â†’ Briefing: executive summary + topic clustering + metadata
+[BUILD] → Briefing: executive summary + topic clustering + metadata
     â†“
-[STORE] â†’ data/briefings/YYYY-MM-DD.json + cost ledger JSONL
+[STORE] → data/briefings/YYYY-MM-DD.json + cost ledger JSONL
     â†“
-[RENDER] â†’ docs/YYYY-MM-DD.html + docs/index.html (with search + topic nav)
-         â†’ docs/topics.html + docs/topic-{slug}.html + docs/search.json
-         â†’ docs/archive.html
+[RENDER] → docs/YYYY-MM-DD.html + docs/index.html (with search + topic nav)
+         → docs/topics.html + docs/topic-{slug}.html + docs/search.json
+         → docs/archive.html
     â†“
-[DELIVER] â†’ Email (inline-styled HTML) + Discord + Slack + Custom webhooks
+[DELIVER] → Email (inline-styled HTML) + Discord + Slack + Custom webhooks
 ```
 
 Each stage is independent. If the Reddit scraper goes down, the rest of the pipeline continues.
 
-### Reliability features (Days 21â€“27)
+### Reliability features (Days 21–27)
 | Feature | What it does |
 |---------|-------------|
 | **Score cache** | 24h TTL SQLite-backed cache; skip AI calls for seen stories |
 | **Source health** | Per-source error tracking; auto-disables flaky sources |
 | **Cost ledger** | JSONL append-log of every AI call; daily/weekly spend reports |
-| **Retry budget** | Circuit breaker (CLOSEDâ†’OPENâ†’HALF_OPEN FSM); adaptive concurrency throttling based on rolling error-rate window |
+| **Retry budget** | Circuit breaker (CLOSED→OPEN→HALF_OPEN FSM); adaptive concurrency throttling based on rolling error-rate window |
 | **Semantic dedup** | Jaccard + embedding similarity to catch paraphrased duplicates |
 | **Topic clustering** | AI-assigned topic labels; per-topic archive pages |
 
@@ -198,27 +198,27 @@ Each run produces/updates:
 
 ```
 src/
-â”œâ”€â”€ main.py              # CLI â€” 16 commands, 1462 lines
-â”œâ”€â”€ orchestrator.py      # Wires all pipeline stages
-â”œâ”€â”€ config.py            # Pydantic Settings from .env
-â”œâ”€â”€ models.py            # NewsItem â†’ ScoredItem â†’ SummarizedItem â†’ Briefing
-â”œâ”€â”€ __version__.py       # Single-source version (1.0.0)
-â”œâ”€â”€ scrapers/            # RSS, HackerNews, Reddit, GitHub + ScraperFactory
-â”œâ”€â”€ deduplicator.py      # URL normalise + Jaccard dedup
-â”œâ”€â”€ ai/                  # AIProviderFactory, scorer (cache-aware), summarizer
-â”œâ”€â”€ briefing.py          # BriefingBuilder + BriefingStore
-â”œâ”€â”€ renderers/           # Markdown, HTML, GitHubPagesWriter (topic pages + search)
-â”œâ”€â”€ delivery/            # Email (inline template), Discord, Slack, webhook, dispatcher
-â””â”€â”€ pipeline/            # RetryBudget (circuit breaker), CostLedger, SourceHealth,
+├── main.py              # CLI — 16 commands, 1462 lines
+├── orchestrator.py      # Wires all pipeline stages
+├── config.py            # Pydantic Settings from .env
+├── models.py            # NewsItem → ScoredItem → SummarizedItem → Briefing
+├── __version__.py       # Single-source version (1.0.0)
+├── scrapers/            # RSS, HackerNews, Reddit, GitHub + ScraperFactory
+├── deduplicator.py      # URL normalise + Jaccard dedup
+├── ai/                  # AIProviderFactory, scorer (cache-aware), summarizer
+├── briefing.py          # BriefingBuilder + BriefingStore
+├── renderers/           # Markdown, HTML, GitHubPagesWriter (topic pages + search)
+├── delivery/            # Email (inline template), Discord, Slack, webhook, dispatcher
+└── pipeline/            # RetryBudget (circuit breaker), CostLedger, SourceHealth,
                          # ScoreCache, EventLogger
 
 data/
-â”œâ”€â”€ sources.json         # Which sources to fetch (edit this!)
-â”œâ”€â”€ briefings/           # Daily briefings as JSON
-â”œâ”€â”€ score_cache.json     # AI score cache (24h TTL)
-â”œâ”€â”€ cost_log.jsonl       # AI cost ledger (cumulative)
-â”œâ”€â”€ retry_budget.jsonl   # Circuit breaker event log
-â””â”€â”€ logs/                # JSONL pipeline event log (one file per day)
+├── sources.json         # Which sources to fetch (edit this!)
+├── briefings/           # Daily briefings as JSON
+├── score_cache.json     # AI score cache (24h TTL)
+├── cost_log.jsonl       # AI cost ledger (cumulative)
+├── retry_budget.jsonl   # Circuit breaker event log
+└── logs/                # JSONL pipeline event log (one file per day)
 
 docs/                    # GitHub Pages output (auto-generated)
 tests/                   # 550+ unit tests
@@ -244,9 +244,9 @@ AI_MODEL=claude-3-haiku-20240307  # Anthropic Claude
 With default settings (14 sources, GPT-4o-mini):
 - ~300 stories fetched per day
 - ~30 pass the score threshold  
-- ~$0.01â€“0.03 per day in OpenAI credits
+- ~$0.01–0.03 per day in OpenAI credits
 
-30 days â‰ˆ **$0.30â€“$0.90**. Cheaper than a coffee.
+30 days ≈ **$0.30–$0.90**. Cheaper than a coffee.
 
 Check your spend anytime: `feedflow-ai --cost-report`
 
@@ -280,16 +280,16 @@ Tests run on Python 3.11 and 3.12 via GitHub Actions on every push.
 
 The 30-day build is complete. Future ideas:
 
-- [ ] **Telegram delivery** â€” more widely used than Discord for me
-- [ ] **Weekly digest mode** â€” summarize the week's top 10
-- [ ] **Obsidian export** â€” save briefings to my knowledge base as Markdown
-- [ ] **MCP server** â€” expose briefings via Model Context Protocol for Claude Desktop
+- [ ] **Telegram delivery** — more widely used than Discord for me
+- [ ] **Weekly digest mode** — summarize the week's top 10
+- [ ] **Obsidian export** — save briefings to my knowledge base as Markdown
+- [ ] **MCP server** — expose briefings via Model Context Protocol for Claude Desktop
 
 ---
 
 ## License
 
-MIT â€” do whatever you want with it.
+MIT — do whatever you want with it.
 
 ---
 

@@ -162,7 +162,7 @@ class TestEmailDelivery:
         ed = EmailDelivery(s)
 
         with patch.object(ed, "_smtp_send"):
-            with patch("src.delivery.email.render_html", return_value="<html></html>"):
+            with patch("src.delivery.email.render_email_html", return_value="<html></html>"):
                 await ed.send(make_briefing())
 
         # If we get here without error, smtp_send was wired up correctly
@@ -517,7 +517,7 @@ class TestDeliveryDispatcher:
         # Mock all network calls at the source
         with (
             patch("src.delivery.webhook._post_json_async", new_callable=AsyncMock),
-            patch("src.delivery.email.render_html", return_value="<html></html>"),
+            patch("src.delivery.email.render_email_html", return_value="<html></html>"),
             patch("asyncio.get_event_loop") as mock_loop,
         ):
             mock_loop.return_value.run_in_executor = AsyncMock(return_value=None)

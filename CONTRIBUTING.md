@@ -1,4 +1,4 @@
-# Contributing to News Radar
+# Contributing to FeedFlow AI
 
 Thank you for your interest in contributing! This document explains how to get
 the project running locally, the code standards we follow, and the workflow for
@@ -35,8 +35,8 @@ submitting changes.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/Harshads-git/news-radar.git
-cd news-radar
+git clone https://github.com/Harshads-git/feedflow-ai.git
+cd feedflow-ai
 
 # 2. Install all dependencies (including dev tools)
 make install
@@ -60,7 +60,7 @@ make setup
 ## Project Structure
 
 ```
-news-radar/
+feedflow-ai/
 ├── src/
 │   ├── config.py           ← All env var settings (Pydantic BaseSettings)
 │   ├── models.py           ← Core data models (NewsItem, Briefing, etc.)
@@ -257,5 +257,5 @@ merging.
 
 ## Questions?
 
-Open a [GitHub Discussion](https://github.com/Harshads-git/news-radar/discussions)
-or file an [Issue](https://github.com/Harshads-git/news-radar/issues).
+Open a [GitHub Discussion](https://github.com/Harshads-git/feedflow-ai/discussions)
+or file an [Issue](https://github.com/Harshads-git/feedflow-ai/issues).

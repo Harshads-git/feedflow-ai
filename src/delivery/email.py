@@ -1,4 +1,4 @@
-﻿"""
+"""
 src/delivery/email.py
 =====================
 SMTP email delivery for the daily briefing.
@@ -41,6 +41,9 @@ from src.exceptions import DeliveryError
 from src.logger import get_logger
 from src.delivery.email_template import render_email_html
 from src.renderers.markdown import render_markdown
+
+# Backward compatibility alias for tests
+render_html = render_email_html
 
 if TYPE_CHECKING:
     from src.config import Settings
