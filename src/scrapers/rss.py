@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/scrapers/rss.py
 ===================
 RSS/Atom feed scraper using feedparser + httpx.
@@ -12,8 +12,8 @@ feedparser do it?
 
 Flow:
   1. httpx.AsyncClient fetches the raw feed bytes
-  2. feedparser.parse() converts bytes → FeedParserDict
-  3. _entry_to_news_item() maps each entry → NewsItem
+  2. feedparser.parse() converts bytes â†’ FeedParserDict
+  3. _entry_to_news_item() maps each entry â†’ NewsItem
   4. BaseScraper._deduplicate() removes within-feed duplicates
   5. Result trimmed to source.limit
 """
@@ -46,7 +46,7 @@ from src.scrapers.base import BaseScraper
 # Mimic a real browser to avoid 403s from protective feeds
 _USER_AGENT = (
     "Mozilla/5.0 (compatible; NewsRadar/0.1; "
-    "+https://github.com/Harshads-git/news-radar)"
+    "+https://github.com/Harshads-git/feedflow-ai)"
 )
 _REQUEST_TIMEOUT = 15.0   # seconds
 _MAX_RETRIES = 3
@@ -64,7 +64,7 @@ class RssScraper(BaseScraper):
 
     Retry policy (tenacity):
         - Up to 3 attempts
-        - Exponential backoff: 2s → 4s → 8s (max 30s)
+        - Exponential backoff: 2s â†’ 4s â†’ 8s (max 30s)
         - Retries on: network errors, HTTP 5xx, HTTP 429
         - Does NOT retry on: HTTP 4xx (except 429), parse errors
     """
@@ -73,7 +73,7 @@ class RssScraper(BaseScraper):
 
     def __init__(self) -> None:
         super().__init__()
-        # Shared async client — created lazily per fetch call
+        # Shared async client â€” created lazily per fetch call
         # (avoids keeping a persistent connection across runs)
         self._client: httpx.AsyncClient | None = None
 
@@ -194,7 +194,7 @@ class RssScraper(BaseScraper):
         """
         Parse raw feed bytes into a list of NewsItems using feedparser.
 
-        feedparser is synchronous — wrap in asyncio.to_thread() if you
+        feedparser is synchronous â€” wrap in asyncio.to_thread() if you
         ever need to parse massive feeds without blocking the event loop.
         For typical feeds (<1000 entries) this is negligible.
         """
@@ -228,11 +228,11 @@ class RssScraper(BaseScraper):
         so callers can filter gracefully without raising exceptions.
 
         feedparser normalises field names across RSS 2.0 and Atom:
-          - entry.link     → canonical URL
-          - entry.title    → story headline
-          - entry.summary  → description/summary
-          - entry.author   → author name
-          - entry.published→ publication date string
+          - entry.link     â†’ canonical URL
+          - entry.title    â†’ story headline
+          - entry.summary  â†’ description/summary
+          - entry.author   â†’ author name
+          - entry.publishedâ†’ publication date string
         """
         # Required fields
         url = entry.get("link") or entry.get("id") or ""
@@ -312,3 +312,4 @@ class RssScraper(BaseScraper):
         except Exception:
             # If bs4 fails, just return the raw text (may contain HTML tags)
             return text
+

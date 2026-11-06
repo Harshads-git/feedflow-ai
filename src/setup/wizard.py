@@ -1,7 +1,7 @@
-"""
+﻿"""
 src/setup/wizard.py
 ====================
-Interactive setup wizard for News Radar.
+Interactive setup wizard for FeedFlow AI.
 
 Guides the user through configuring:
   1. AI provider + API key (OpenAI / Gemini / Anthropic)
@@ -16,7 +16,7 @@ Outputs:
   - data/sources.json (pre-populated from bundled template)
 
 Why a wizard instead of just docs?
-  Editing raw .env files is error-prone — wrong variable names, missing
+  Editing raw .env files is error-prone â€” wrong variable names, missing
   values, copy-paste mistakes. The wizard validates each input immediately
   (e.g., checks that an API key starts with 'sk-' or 'AIza'), gives
   sensible defaults, and shows a preview before writing.
@@ -235,7 +235,7 @@ def run_wizard(
         from rich.prompt import Confirm, IntPrompt, Prompt
         from rich.text import Text
     except ImportError:
-        # Rich not available — fall back to plain prompts
+        # Rich not available â€” fall back to plain prompts
         _run_plain_wizard(env_path, sources_path)
         return WizardConfig()
 
@@ -252,16 +252,16 @@ def run_wizard(
     import sys as _sys
     if not _sys.stdin.isatty():
         console.print(
-            "[yellow]⚠[/yellow]  Setup wizard requires an interactive terminal.\n"
+            "[yellow]âš [/yellow]  Setup wizard requires an interactive terminal.\n"
             f"Copy [bold].env.example[/bold] to [bold]{env_path}[/bold] and edit it manually,\n"
-            "or run [bold cyan]news-radar --setup[/bold cyan] in a real terminal."
+            "or run [bold cyan]feedflow-ai --setup[/bold cyan] in a real terminal."
         )
         return cfg
 
     try:
         return _run_interactive_wizard(cfg, env_path, sources_path, console)
     except EOFError:
-        # Non-TTY stdin (subprocess, DEVNULL, CI pipe) — exit gracefully
+        # Non-TTY stdin (subprocess, DEVNULL, CI pipe) â€” exit gracefully
         console.print(
             "\n[yellow]Setup wizard requires an interactive terminal.[/yellow]"
         )
@@ -285,7 +285,7 @@ def _run_interactive_wizard(
     # ---- Welcome banner ----
     c.print()
     console.print(Panel.fit(
-        "[bold cyan]📡 News Radar Setup Wizard[/bold cyan]\n"
+        "[bold cyan]ðŸ“¡ FeedFlow AI Setup Wizard[/bold cyan]\n"
         "[dim]This wizard will create your .env and sources.json files.[/dim]\n"
         "[dim]Press Enter to accept defaults shown in brackets.[/dim]",
         border_style="cyan",
@@ -295,15 +295,15 @@ def _run_interactive_wizard(
     # ---- Detect existing config ----
     existing_env = _load_existing_env(env_path)
     if existing_env:
-        console.print(f"[yellow]⚠[/yellow]  Found existing [bold]{env_path}[/bold] — "
+        console.print(f"[yellow]âš [/yellow]  Found existing [bold]{env_path}[/bold] â€” "
                       "values will be used as defaults.")
         console.print()
 
     # ==================================================================
     # STEP 1: AI Provider
     # ==================================================================
-    console.print("[bold]Step 1 of 5 — AI Provider[/bold]")
-    console.print("[dim]News Radar uses an AI model to score and summarize stories.[/dim]")
+    console.print("[bold]Step 1 of 5 â€” AI Provider[/bold]")
+    console.print("[dim]FeedFlow AI uses an AI model to score and summarize stories.[/dim]")
     console.print()
 
     provider_map = {
@@ -312,9 +312,9 @@ def _run_interactive_wizard(
         "3": ("anthropic", "claude-3-haiku-20240307", "ANTHROPIC_API_KEY", "sk-ant-"),
     }
 
-    console.print("  [1] OpenAI (gpt-4o-mini) — recommended, cheap, ~$0.02/day")
-    console.print("  [2] Google Gemini (gemini-1.5-flash) — free tier available")
-    console.print("  [3] Anthropic (claude-3-haiku) — high quality")
+    console.print("  [1] OpenAI (gpt-4o-mini) â€” recommended, cheap, ~$0.02/day")
+    console.print("  [2] Google Gemini (gemini-1.5-flash) â€” free tier available")
+    console.print("  [3] Anthropic (claude-3-haiku) â€” high quality")
     console.print()
 
     default_provider_num = "1"
@@ -347,15 +347,15 @@ def _run_interactive_wizard(
             cfg.ai_api_key = existing_key
             break
         console.print(
-            f"  [red]✗[/red] Key looks wrong (expected prefix: {key_prefix}). Try again."
+            f"  [red]âœ—[/red] Key looks wrong (expected prefix: {key_prefix}). Try again."
         )
 
-    console.print(f"  [green]✓[/green] AI: {cfg.ai_model}\n")
+    console.print(f"  [green]âœ“[/green] AI: {cfg.ai_model}\n")
 
     # ==================================================================
     # STEP 2: Interests & Scoring
     # ==================================================================
-    console.print("[bold]Step 2 of 5 — Your Interests[/bold]")
+    console.print("[bold]Step 2 of 5 â€” Your Interests[/bold]")
     console.print("[dim]The AI uses this to score story relevance for you.[/dim]\n")
 
     default_interests = existing_env.get("USER_INTERESTS", cfg.user_interests)
@@ -377,15 +377,15 @@ def _run_interactive_wizard(
         default=default_max,
     )
     console.print(
-        f"  [green]✓[/green] Interests set, threshold={cfg.score_threshold}/10, "
+        f"  [green]âœ“[/green] Interests set, threshold={cfg.score_threshold}/10, "
         f"max={cfg.max_briefing_items} items\n"
     )
 
     # ==================================================================
     # STEP 3: Delivery
     # ==================================================================
-    console.print("[bold]Step 3 of 5 — Delivery Channels[/bold]")
-    console.print("[dim]Where should News Radar send your briefing? (all optional)[/dim]\n")
+    console.print("[bold]Step 3 of 5 â€” Delivery Channels[/bold]")
+    console.print("[dim]Where should FeedFlow AI send your briefing? (all optional)[/dim]\n")
 
     # Email
     if Confirm.ask("  Enable email delivery?", default=bool(existing_env.get("SMTP_USER"))):
@@ -403,7 +403,7 @@ def _run_interactive_wizard(
             "    Send briefing to (email)",
             default=existing_env.get("EMAIL_TO", cfg.smtp_user),
         )
-        console.print(f"    [green]✓[/green] Email → {cfg.email_to}")
+        console.print(f"    [green]âœ“[/green] Email â†’ {cfg.email_to}")
 
     # Discord
     if Confirm.ask("\n  Enable Discord delivery?",
@@ -413,7 +413,7 @@ def _run_interactive_wizard(
             "    Discord webhook URL",
             default=existing_env.get("DISCORD_WEBHOOK_URL", ""),
         )
-        console.print("    [green]✓[/green] Discord webhook configured")
+        console.print("    [green]âœ“[/green] Discord webhook configured")
 
     # Slack
     if Confirm.ask("\n  Enable Slack delivery?",
@@ -423,7 +423,7 @@ def _run_interactive_wizard(
             "    Slack webhook URL",
             default=existing_env.get("SLACK_WEBHOOK_URL", ""),
         )
-        console.print("    [green]✓[/green] Slack webhook configured")
+        console.print("    [green]âœ“[/green] Slack webhook configured")
 
     # GitHub Pages
     default_gh = existing_env.get("GITHUB_PAGES_ENABLED", "true").lower() == "true"
@@ -432,14 +432,14 @@ def _run_interactive_wizard(
         default=default_gh,
     )
     if cfg.github_pages_enabled:
-        console.print("    [green]✓[/green] GitHub Pages will be updated after each run")
+        console.print("    [green]âœ“[/green] GitHub Pages will be updated after each run")
 
     console.print()
 
     # ==================================================================
     # STEP 4: Sources
     # ==================================================================
-    console.print("[bold]Step 4 of 5 — News Sources[/bold]")
+    console.print("[bold]Step 4 of 5 â€” News Sources[/bold]")
     console.print("[dim]Choose which sources to fetch from. "
                   "Defaults shown are recommended.[/dim]\n")
 
@@ -458,12 +458,12 @@ def _run_interactive_wizard(
             enabled_ids.append(src["id"])
 
     cfg.enabled_source_ids = enabled_ids
-    console.print(f"\n  [green]✓[/green] {len(enabled_ids)} sources selected\n")
+    console.print(f"\n  [green]âœ“[/green] {len(enabled_ids)} sources selected\n")
 
     # ==================================================================
     # STEP 5: Preview & Write
     # ==================================================================
-    console.print("[bold]Step 5 of 5 — Review & Save[/bold]\n")
+    console.print("[bold]Step 5 of 5 â€” Review & Save[/bold]\n")
 
     _print_config_preview(cfg, console)
 
@@ -576,13 +576,13 @@ def _write_outputs(
     _write_sources(cfg, sources_path)
 
     if c:
-        c.print(f"\n[green]✓[/green] Written: [bold]{env_path}[/bold]")
-        c.print(f"[green]✓[/green] Written: [bold]{sources_path}[/bold]")
+        c.print(f"\n[green]âœ“[/green] Written: [bold]{env_path}[/bold]")
+        c.print(f"[green]âœ“[/green] Written: [bold]{sources_path}[/bold]")
         c.print()
         c.print("[bold green]Setup complete![/bold green]")
         c.print(
-            f"Run [bold cyan]news-radar --check[/bold cyan] to validate, "
-            f"then [bold cyan]news-radar --dry-run[/bold cyan] to test."
+            f"Run [bold cyan]feedflow-ai --check[/bold cyan] to validate, "
+            f"then [bold cyan]feedflow-ai --dry-run[/bold cyan] to test."
         )
 
 
@@ -593,7 +593,7 @@ def _write_outputs(
 
 def _run_plain_wizard(env_path: Path, sources_path: Path) -> None:
     """Minimal plain-text wizard when Rich is not available."""
-    print("\n=== News Radar Setup ===")
+    print("\n=== FeedFlow AI Setup ===")
     print("Rich is not installed. Using basic setup.\n")
 
     cfg = WizardConfig()
@@ -662,7 +662,7 @@ def _print_config_preview(cfg: WizardConfig, console: object) -> None:
     table.add_column("Value", style="white")
 
     table.add_row("AI Model", cfg.ai_model)
-    table.add_row("Interests", cfg.user_interests[:60] + ("…" if len(cfg.user_interests) > 60 else ""))
+    table.add_row("Interests", cfg.user_interests[:60] + ("â€¦" if len(cfg.user_interests) > 60 else ""))
     table.add_row("Score Threshold", f"{cfg.score_threshold}/10")
     table.add_row("Max Items", str(cfg.max_briefing_items))
     table.add_row("Email", cfg.email_to if cfg.email_enabled else "disabled")
@@ -672,3 +672,4 @@ def _print_config_preview(cfg: WizardConfig, console: object) -> None:
     table.add_row("Sources", f"{len(cfg.enabled_source_ids)} enabled")
 
     c.print(table)  # type: ignore[attr-defined]
+

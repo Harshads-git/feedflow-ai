@@ -1,9 +1,9 @@
-# .github/workflows/daily.yml
+﻿# .github/workflows/daily.yml
 # ============================
-# Daily briefing pipeline — runs automatically every day at 07:00 UTC.
+# Daily briefing pipeline â€” runs automatically every day at 07:00 UTC.
 # Can also be triggered manually via workflow_dispatch with custom inputs.
 #
-# Secrets required (set in GitHub repo Settings → Secrets → Actions):
+# Secrets required (set in GitHub repo Settings â†’ Secrets â†’ Actions):
 #   OPENAI_API_KEY    OR   GEMINI_API_KEY   OR   ANTHROPIC_API_KEY
 #   (at least one AI key is required)
 #
@@ -49,10 +49,10 @@ permissions:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Job 1: Run the news-radar pipeline
+  # Job 1: Run the feedflow-ai pipeline
   # ---------------------------------------------------------------------------
   run-pipeline:
-    name: Run News Radar Pipeline
+    name: Run FeedFlow AI Pipeline
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -140,7 +140,7 @@ jobs:
       - name: Write job summary
         if: always()
         run: |
-          echo "## 📡 News Radar — Daily Briefing" >> $GITHUB_STEP_SUMMARY
+          echo "## ðŸ“¡ FeedFlow AI â€” Daily Briefing" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
@@ -194,3 +194,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+

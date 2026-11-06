@@ -1,7 +1,7 @@
-"""
+﻿"""
 src/scoring/rubric.py
 ======================
-Multi-factor scoring rubric for News Radar.
+Multi-factor scoring rubric for FeedFlow AI.
 
 Problem: Raw AI scores (0-10) alone don't capture everything that makes a
 story valuable. A story might score 7/10 on AI relevance but was published
@@ -19,7 +19,7 @@ into a composite score that factors in:
      stories older than 48 hours get 0 bonus. Linear interpolation.
 
   3. Source Trust Score (weight: source_trust_weight)
-     Configurable per-source trust rating (0.0–1.0). High-trust sources
+     Configurable per-source trust rating (0.0â€“1.0). High-trust sources
      (HN, ArXiv) get boosted; low-trust sources get penalized.
      Default: 0.7 (slight positive prior for all configured sources).
 
@@ -69,13 +69,13 @@ _DEFAULT_PLATFORM_MAXES: dict[str, float] = {
     "github": 500.0,
 }
 
-# Recency buckets (hours → bonus fraction 0-1)
-_RECENCY_FULL_HOURS = 6.0    # ≤ 6h → full recency bonus
-_RECENCY_ZERO_HOURS = 48.0   # ≥ 48h → zero recency bonus
+# Recency buckets (hours â†’ bonus fraction 0-1)
+_RECENCY_FULL_HOURS = 6.0    # â‰¤ 6h â†’ full recency bonus
+_RECENCY_ZERO_HOURS = 48.0   # â‰¥ 48h â†’ zero recency bonus
 
 
 # ---------------------------------------------------------------------------
-# ScoringRubric — configurable weight settings
+# ScoringRubric â€” configurable weight settings
 # ---------------------------------------------------------------------------
 
 
@@ -99,7 +99,7 @@ class ScoringRubric:
 
     source_trust_weight:
         Weight for per-source trust score. Default: 0.15
-        Trust scores are 0.0–1.0 (default: 0.7 for all sources).
+        Trust scores are 0.0â€“1.0 (default: 0.7 for all sources).
 
     platform_weight:
         Weight for normalized platform engagement. Default: 0.10
@@ -110,11 +110,11 @@ class ScoringRubric:
         Default: 0.7 (slight positive prior).
 
     source_trust_map:
-        Dict mapping source_id → trust score (0.0–1.0).
+        Dict mapping source_id â†’ trust score (0.0â€“1.0).
         Example: {"hackernews-top": 0.9, "r-programming": 0.8}
 
     platform_max_map:
-        Dict mapping source_type → typical max engagement score.
+        Dict mapping source_type â†’ typical max engagement score.
         Used to normalize raw platform scores into [0, 1].
     """
 
@@ -172,7 +172,7 @@ def recency_fraction(published_at: datetime | None) -> float:
         return 1.0
     if age_hours >= _RECENCY_ZERO_HOURS:
         return 0.0
-    # Linear interpolation from full → zero
+    # Linear interpolation from full â†’ zero
     span = _RECENCY_ZERO_HOURS - _RECENCY_FULL_HOURS
     return 1.0 - (age_hours - _RECENCY_FULL_HOURS) / span
 
@@ -182,10 +182,10 @@ def normalize_platform_score(score: int | None, max_score: float) -> float:
     Normalize a raw platform score (HN points, Reddit upvotes) to [0, 1].
 
     Uses a sqrt compression so very high scores don't dominate.
-    E.g., 1000 HN points with max=1000 → sqrt(1.0) = 1.0
-         100 HN points → sqrt(0.1) ≈ 0.316
+    E.g., 1000 HN points with max=1000 â†’ sqrt(1.0) = 1.0
+         100 HN points â†’ sqrt(0.1) â‰ˆ 0.316
 
-    Returns 0.0 if score is None or max_score ≤ 0.
+    Returns 0.0 if score is None or max_score â‰¤ 0.
     """
     if score is None or max_score <= 0:
         return 0.0
@@ -194,7 +194,7 @@ def normalize_platform_score(score: int | None, max_score: float) -> float:
 
 
 # ---------------------------------------------------------------------------
-# CompositeScore — the breakdown for one item
+# CompositeScore â€” the breakdown for one item
 # ---------------------------------------------------------------------------
 
 
@@ -225,7 +225,7 @@ class CompositeScore:
 
 
 # ---------------------------------------------------------------------------
-# RubricScorer — the main adjustment engine
+# RubricScorer â€” the main adjustment engine
 # ---------------------------------------------------------------------------
 
 
@@ -277,7 +277,7 @@ class RubricScorer:
         max_score = r.platform_max_for(item.source_type)
         plat_f = normalize_platform_score(item.score, max_score)
 
-        # 5. Weighted sum → [0, 1]
+        # 5. Weighted sum â†’ [0, 1]
         total_w = r.total_weight if r.total_weight > 0 else 1.0
         composite = (
             r.ai_weight * ai_f
@@ -309,3 +309,4 @@ class RubricScorer:
         beyond what the raw AI score would produce.
         """
         return [(item, self.compute(item)) for item in scored_items]
+

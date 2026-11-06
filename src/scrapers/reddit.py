@@ -1,9 +1,9 @@
-"""
+﻿"""
 src/scrapers/reddit.py
 ======================
 Reddit scraper using the public JSON API (no OAuth required).
 
-Every Reddit listing page has a hidden JSON endpoint — just append
+Every Reddit listing page has a hidden JSON endpoint â€” just append
 ".json" to any subreddit URL:
   https://www.reddit.com/r/programming/hot.json
 
@@ -19,16 +19,16 @@ Rate limiting:
 
 Data mapping:
   Reddit post fields we use:
-    data.title       → story title
-    data.url         → link URL (or Reddit post URL for self-posts)
-    data.permalink   → Reddit discussion thread path
-    data.selftext    → post body (used as summary for text posts)
-    data.score       → net upvotes (upvotes - downvotes)
-    data.num_comments→ comment count
-    data.author      → Reddit username
-    data.created_utc → Unix timestamp (UTC)
-    data.is_self     → True for text posts (use Reddit URL, not external link)
-    data.stickied    → True for mod-pinned posts (usually skip these)
+    data.title       â†’ story title
+    data.url         â†’ link URL (or Reddit post URL for self-posts)
+    data.permalink   â†’ Reddit discussion thread path
+    data.selftext    â†’ post body (used as summary for text posts)
+    data.score       â†’ net upvotes (upvotes - downvotes)
+    data.num_commentsâ†’ comment count
+    data.author      â†’ Reddit username
+    data.created_utc â†’ Unix timestamp (UTC)
+    data.is_self     â†’ True for text posts (use Reddit URL, not external link)
+    data.stickied    â†’ True for mod-pinned posts (usually skip these)
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ from src.scrapers.base import BaseScraper
 # ---------------------------------------------------------------------------
 
 _BASE_URL = "https://www.reddit.com"
-_USER_AGENT = "NewsRadar/0.1 (+https://github.com/Harshads-git/news-radar)"
+_USER_AGENT = "NewsRadar/0.1 (+https://github.com/Harshads-git/feedflow-ai)"
 _REQUEST_TIMEOUT = 15.0
 _MAX_RETRIES = 3
 _RETRY_MIN_WAIT = 2
@@ -67,9 +67,9 @@ class RedditScraper(BaseScraper):
     content by default.
 
     Configuration (via SourceConfig fields):
-      subreddit: str     — name without r/ prefix (e.g. "programming")
-      sort: str          — "hot", "new", "top", "rising" (default: "hot")
-      limit: int         — max items to return (max 100 per Reddit API)
+      subreddit: str     â€” name without r/ prefix (e.g. "programming")
+      sort: str          â€” "hot", "new", "top", "rising" (default: "hot")
+      limit: int         â€” max items to return (max 100 per Reddit API)
     """
 
     SOURCE_TYPE = "reddit"
@@ -148,7 +148,7 @@ class RedditScraper(BaseScraper):
             )
         if response.status_code == 403:
             raise FetchError(
-                "Reddit returned 403 — subreddit may be private or banned",
+                "Reddit returned 403 â€” subreddit may be private or banned",
                 url=url,
                 status_code=403,
             )
@@ -234,10 +234,10 @@ class RedditScraper(BaseScraper):
         reddit_url = f"https://www.reddit.com{permalink}" if permalink else ""
 
         if is_self:
-            # Text post — use Reddit discussion URL as canonical link
+            # Text post â€” use Reddit discussion URL as canonical link
             url = reddit_url
         else:
-            # Link post — use the external URL, fall back to Reddit URL
+            # Link post â€” use the external URL, fall back to Reddit URL
             url = post.get("url") or reddit_url
 
         if not url:
@@ -271,3 +271,4 @@ class RedditScraper(BaseScraper):
             tags=source.tags,
             raw=post,
         )
+

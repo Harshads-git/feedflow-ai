@@ -1,28 +1,28 @@
-"""
+﻿"""
 src/deduplicator.py
 ===================
-Cross-source deduplication engine for News Radar.
+Cross-source deduplication engine for FeedFlow AI.
 
 Problem: The same story often appears across multiple sources.
   - HN frontpage + HN RSS feed both carry the same 30 top stories
   - Reddit r/programming + r/tech both link to the same TechCrunch article
   - An article is posted, then re-posted 3 days later with a slight title change
-  - "OpenAI's GPT-5 is here" and "GPT-5 launched by OpenAI" — same story,
+  - "OpenAI's GPT-5 is here" and "GPT-5 launched by OpenAI" â€” same story,
     low Jaccard but high semantic similarity
 
 Three-stage deduplication (Day 20 upgrade):
-  Stage 1 — URL Normalization + Equality
+  Stage 1 â€” URL Normalization + Equality
     Strip tracking parameters, fragments, and trailing slashes, then
     compare canonical URLs. This catches the most common case: the exact
     same article linked from two different sources.
 
-  Stage 2 — Jaccard Title Similarity
+  Stage 2 â€” Jaccard Title Similarity
     Compare tokenized titles using the Jaccard coefficient. If two stories
     have a similarity score above TITLE_SIMILARITY_THRESHOLD, the lower-
     scored item is considered a duplicate. This catches:
       - "Python 4.0 Released" vs "Python Version 4.0 is Out"
 
-  Stage 3 — Semantic (TF-IDF Cosine) Title Similarity       [NEW Day 20]
+  Stage 3 â€” Semantic (TF-IDF Cosine) Title Similarity       [NEW Day 20]
     Represent each title as a TF-IDF weighted word vector and compute
     cosine similarity between pairs. This catches cases where word choice
     differs but meaning is the same:
@@ -30,7 +30,7 @@ Three-stage deduplication (Day 20 upgrade):
     Uses a pure-Python implementation with no external ML libraries.
 
   Stage 1 runs first (O(n) with hash set), Stage 2 + 3 only run on the
-  remaining items (O(n²) in the worst case but with a much smaller n).
+  remaining items (O(nÂ²) in the worst case but with a much smaller n).
 
 Scoring: when two items are considered duplicates, we keep the one with:
   1. Higher platform score (HN points / Reddit upvotes)
@@ -89,7 +89,7 @@ _TRACKING_PARAMS = frozenset(
     }
 )
 
-# Canonical domain mappings: redirect domains → their actual domain
+# Canonical domain mappings: redirect domains â†’ their actual domain
 # Handles shortened URLs that redirect to well-known domains
 _CANONICAL_DOMAINS: dict[str, str] = {
     "amp.reddit.com": "www.reddit.com",
@@ -130,7 +130,7 @@ def normalize_url(url: str) -> str:
       4. Remove known tracking query parameters (UTM, fbclid, etc.)
       5. Sort remaining query parameters (so ?a=1&b=2 == ?b=2&a=1)
       6. Strip trailing slash from the path
-      7. Apply canonical domain mappings (e.g. old.reddit.com → www.reddit.com)
+      7. Apply canonical domain mappings (e.g. old.reddit.com â†’ www.reddit.com)
       8. Remove redundant default ports (:80 for http, :443 for https)
 
     Returns
@@ -223,7 +223,7 @@ def jaccard_similarity(set_a: frozenset[str], set_b: frozenset[str]) -> float:
     """
     Compute the Jaccard similarity coefficient between two token sets.
 
-    Jaccard(A, B) = |A ∩ B| / |A ∪ B|
+    Jaccard(A, B) = |A âˆ© B| / |A âˆª B|
 
     Returns a float in [0.0, 1.0]:
       0.0 = completely different sets
@@ -263,7 +263,7 @@ def are_similar_titles(title_a: str, title_b: str, threshold: float = TITLE_SIMI
 
 
 # ---------------------------------------------------------------------------
-# TF-IDF Cosine Similarity (Stage 3 — Semantic Dedup)
+# TF-IDF Cosine Similarity (Stage 3 â€” Semantic Dedup)
 # ---------------------------------------------------------------------------
 
 
@@ -333,7 +333,7 @@ def cosine_similarity(vec_a: dict[str, float], vec_b: dict[str, float]) -> float
     """
     Compute cosine similarity between two TF-IDF weight dicts.
 
-    cos(A, B) = (A · B) / (‖A‖ × ‖B‖)
+    cos(A, B) = (A Â· B) / (â€–Aâ€– Ã— â€–Bâ€–)
 
     Returns a float in [0.0, 1.0]:
       0.0 = completely orthogonal (no shared terms)
@@ -366,9 +366,9 @@ class Deduplicator:
     """
     Three-stage deduplication engine for NewsItem lists.
 
-    Stage 1: URL normalization equality check (O(n) — hash set lookup)
-    Stage 2: Jaccard title similarity check (O(n²) — pairwise comparison)
-    Stage 3: TF-IDF cosine semantic similarity (O(n²) — pairwise comparison)
+    Stage 1: URL normalization equality check (O(n) â€” hash set lookup)
+    Stage 2: Jaccard title similarity check (O(nÂ²) â€” pairwise comparison)
+    Stage 3: TF-IDF cosine semantic similarity (O(nÂ²) â€” pairwise comparison)
 
     When two items are considered duplicates, the "winner" is:
       - The item with the higher platform score (HN points / Reddit upvotes)
@@ -450,7 +450,7 @@ class Deduplicator:
         total_removed = before - len(stage3)
         if total_removed > 0:
             log.debug(
-                "Deduplication: %d → %d items (-%d URL, -%d Jaccard, -%d semantic)",
+                "Deduplication: %d â†’ %d items (-%d URL, -%d Jaccard, -%d semantic)",
                 before,
                 len(stage3),
                 url_removed,
@@ -471,7 +471,7 @@ class Deduplicator:
         When two items share the same normalized URL, keep the one with
         the higher platform score (or the first one if scores are equal).
         """
-        # Map normalized_url → best NewsItem seen so far
+        # Map normalized_url â†’ best NewsItem seen so far
         seen: dict[str, NewsItem] = {}
 
         for item in items:
@@ -499,7 +499,7 @@ class Deduplicator:
         Algorithm:
           - Tokenize each title once
           - Compare each pair (i, j) where j > i  [upper triangle only]
-          - If Jaccard(i, j) ≥ threshold → mark the lower-scored as duplicate
+          - If Jaccard(i, j) â‰¥ threshold â†’ mark the lower-scored as duplicate
           - Return items that were never marked as duplicates
         """
         n = len(items)
@@ -545,7 +545,7 @@ class Deduplicator:
           - Tokenize all remaining titles to word lists (not frozensets)
           - Build TF-IDF vectors over the entire mini-corpus
           - Compare pairwise cosine similarity (upper triangle)
-          - Mark lower-scored item as duplicate if similarity ≥ threshold
+          - Mark lower-scored item as duplicate if similarity â‰¥ threshold
         """
         n = len(items)
         if n <= 1:
@@ -591,3 +591,4 @@ class Deduplicator:
     def _score(item: NewsItem) -> int:
         """Return the platform score for ranking duplicates. Default 0."""
         return item.score or 0
+

@@ -1,7 +1,7 @@
 [project]
-name = "news-radar"
+name = "feedflow-ai"
 version = "1.0.0"
-description = "📡 Your personal AI-powered news radar — fetch, score, and summarize daily briefings from RSS, Hacker News, and Reddit."
+description = "FeedFlow AI - async AI pipeline that scores, summarizes, and delivers a personalized daily news briefing via email, Slack, and Discord."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
@@ -48,7 +48,7 @@ dev = [
 ]
 
 [project.scripts]
-news-radar = "src.main:main"
+feedflow-ai = "src.main:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -115,3 +115,4 @@ ignore = ["E501"]  # line too long handled by formatter
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
+

@@ -1,18 +1,18 @@
-"""
+﻿"""
 src/models.py
 =============
-Core Pydantic v2 data models for the News Radar pipeline.
+Core Pydantic v2 data models for the FeedFlow AI pipeline.
 
 Data flows through the pipeline in this order:
-  SourceConfig  ← loaded from data/sources.json
-      ↓
-  NewsItem      ← output of every scraper
-      ↓
-  ScoredItem    ← NewsItem + AI score + reason
-      ↓
-  SummarizedItem← ScoredItem + AI summary + context
-      ↓
-  Briefing      ← daily collection of SummarizedItems
+  SourceConfig  â† loaded from data/sources.json
+      â†“
+  NewsItem      â† output of every scraper
+      â†“
+  ScoredItem    â† NewsItem + AI score + reason
+      â†“
+  SummarizedItemâ† ScoredItem + AI summary + context
+      â†“
+  Briefing      â† daily collection of SummarizedItems
 
 Keeping models in one file makes the data contract explicit and easy
 to audit. Anyone reading this file understands exactly what flows
@@ -211,7 +211,7 @@ class ScoredItem(BaseModel):
     # Alias for convenience (used by scorer and tests)
     ai_reason: str = Field(
         default="",
-        description="Alias for ai_score_reason — one-sentence explanation.",
+        description="Alias for ai_score_reason â€” one-sentence explanation.",
     )
     ai_topics: list[str] = Field(
         default_factory=list,
@@ -304,7 +304,7 @@ class SummarizedItem(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Briefing  (daily collection — top-level output of the pipeline)
+# Briefing  (daily collection â€” top-level output of the pipeline)
 # ---------------------------------------------------------------------------
 
 
@@ -321,7 +321,7 @@ class BriefingMetadata(BaseModel):
 
 class Briefing(BaseModel):
     """
-    The final daily output of the News Radar pipeline.
+    The final daily output of the FeedFlow AI pipeline.
 
     Serialized to:
       - data/briefings/YYYY-MM-DD.json  (persistent store)
@@ -377,3 +377,4 @@ class Briefing(BaseModel):
     @property
     def item_count(self) -> int:
         return len(self.items)
+

@@ -1,19 +1,19 @@
-"""
+﻿"""
 src/scrapers/base.py
 ====================
-Abstract base class for all News Radar scrapers.
+Abstract base class for all FeedFlow AI scrapers.
 
 Every source type (RSS, Hacker News, Reddit, GitHub) implements this
-interface. The orchestrator only knows about BaseScraper — it never
+interface. The orchestrator only knows about BaseScraper â€” it never
 imports concrete scraper classes directly. This is the Open/Closed
 principle: the system is open for extension (add a new scraper) but
 closed for modification (don't touch the orchestrator).
 
 Architecture:
-    BaseScraper          ← abstract interface (this file)
-        RssScraper       ← feedparser + httpx (Day 5)
-        HackerNewsScraper← HN Firebase API (Day 6)
-        RedditScraper    ← Reddit JSON API (Day 7)
+    BaseScraper          â† abstract interface (this file)
+        RssScraper       â† feedparser + httpx (Day 5)
+        HackerNewsScraperâ† HN Firebase API (Day 6)
+        RedditScraper    â† Reddit JSON API (Day 7)
 
 The ScraperFactory (Day 8) uses SourceConfig.type to instantiate
 the correct subclass. Callers always use:
@@ -44,7 +44,7 @@ class BaseScraper(ABC):
     ``validate_source()`` if the source config has special requirements
     beyond what SourceConfig already validates.
 
-    All scrapers are stateless — no instance variables are set after
+    All scrapers are stateless â€” no instance variables are set after
     ``__init__``. This means a single scraper instance can safely
     process multiple sources concurrently.
     """
@@ -125,7 +125,7 @@ class BaseScraper(ABC):
     def _log_fetch_done(self, source: "SourceConfig", count: int) -> None:
         """Log a standard end-of-fetch message with item count."""
         self.log.info(
-            "[source]%s[/source] → [count]%d[/count] items",
+            "[source]%s[/source] â†’ [count]%d[/count] items",
             source.name,
             count,
         )
@@ -165,3 +165,4 @@ class BaseScraper(ABC):
                 e,
             )
             return []
+

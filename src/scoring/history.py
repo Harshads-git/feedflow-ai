@@ -1,7 +1,7 @@
-"""
+﻿"""
 src/scoring/history.py
 ========================
-Lightweight score history persistence for News Radar.
+Lightweight score history persistence for FeedFlow AI.
 
 Problem: Without history, we can't answer:
   - "Has this topic been trending up over the last 7 days?"
@@ -19,7 +19,7 @@ Why JSONL instead of SQLite?
   - Human-readable: `tail -n 5 data/score_history.jsonl | jq .`
   - Portable: trivially importable into any analytics tool
   - For a news aggregator running once/day, the file grows ~50 lines/day
-    (one per scored item). At 365 days, that's ~18,000 lines — trivial.
+    (one per scored item). At 365 days, that's ~18,000 lines â€” trivial.
 
 Day 21 features:
   - ScoreHistory.append(): persist one ScoredItem + composite score per run
@@ -48,7 +48,7 @@ from typing import Any
 
 
 # ---------------------------------------------------------------------------
-# ScoreEntry — one persisted record
+# ScoreEntry â€” one persisted record
 # ---------------------------------------------------------------------------
 
 
@@ -167,7 +167,7 @@ class ScoreHistory:
 
     def append(
         self,
-        scored_item: object,  # ScoredItem — typed as object to avoid import cycle
+        scored_item: object,  # ScoredItem â€” typed as object to avoid import cycle
         *,
         composite_score: float,
         run_date: str | None = None,
@@ -278,7 +278,7 @@ class ScoreHistory:
 
         Returns
         -------
-        dict mapping source_id → {"mean": float, "std": float, "count": int}
+        dict mapping source_id â†’ {"mean": float, "std": float, "count": int}
         """
         entries = self.load(days=days)
 
@@ -318,7 +318,7 @@ class ScoreHistory:
 
         Returns
         -------
-        dict mapping ISO date string → average composite score for that day.
+        dict mapping ISO date string â†’ average composite score for that day.
         An empty dict if no matching entries are found.
 
         Why per-day average?
@@ -349,3 +349,4 @@ class ScoreHistory:
         stats = self.source_stats(days=days)
         ranked = sorted(stats.items(), key=lambda kv: kv[1]["mean"], reverse=True)
         return [(src, info["mean"]) for src, info in ranked[:n]]
+

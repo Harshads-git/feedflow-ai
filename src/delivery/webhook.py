@@ -1,10 +1,10 @@
-"""
+﻿"""
 src/delivery/webhook.py
 ========================
 Webhook delivery for Discord, Slack, and custom HTTP endpoints.
 
 All webhooks are sent as HTTP POST requests using Python's built-in
-urllib — no httpx/requests dependency needed for delivery.
+urllib â€” no httpx/requests dependency needed for delivery.
 
 Discord:
   Sends a rich embed with color-coded score, top stories, and a
@@ -68,7 +68,7 @@ def _post_json(url: str, payload: dict, timeout: int = 15) -> None:
     req = urllib.request.Request(
         url,
         data=body,
-        headers={"Content-Type": "application/json", "User-Agent": "news-radar/0.1"},
+        headers={"Content-Type": "application/json", "User-Agent": "feedflow-ai/0.1"},
         method="POST",
     )
     try:
@@ -106,7 +106,7 @@ async def _post_json_async(url: str, payload: dict) -> None:
 # Discord Delivery
 # ---------------------------------------------------------------------------
 
-# Score → Discord embed color (decimal)
+# Score â†’ Discord embed color (decimal)
 _DISCORD_COLORS = {
     10: 0x27AE60,  # green
     9: 0x2ECC71,   # emerald
@@ -165,7 +165,7 @@ class DiscordDelivery:
 
             fields.append({
                 "name": f"{rank}. {headline[:150]}",
-                "value": f"{score_str} · [{item.source_name}]({item.url}){summary_preview}",
+                "value": f"{score_str} Â· [{item.source_name}]({item.url}){summary_preview}",
                 "inline": False,
             })
 
@@ -175,14 +175,14 @@ class DiscordDelivery:
             description = briefing.executive_summary.split("\n\n")[0][:500]
 
         embed = {
-            "title": f"\U0001f4e1 News Radar — {briefing.date}",
+            "title": f"\U0001f4e1 FeedFlow AI â€” {briefing.date}",
             "description": description,
             "color": _discord_color(top_score),
             "fields": fields,
             "footer": {
                 "text": (
-                    f"{len(briefing.items)} stories · "
-                    f"Fetched: {briefing.total_fetched} · "
+                    f"{len(briefing.items)} stories Â· "
+                    f"Fetched: {briefing.total_fetched} Â· "
                     f"Threshold: {self.settings.score_threshold}/10"
                 )
             },
@@ -190,7 +190,7 @@ class DiscordDelivery:
 
         # Add GitHub Pages link if available
         if self.settings.github_pages_enabled:
-            repo = "https://harshads-git.github.io/news-radar"
+            repo = "https://harshads-git.github.io/feedflow-ai"
             embed["url"] = repo
 
         return {"embeds": [embed]}
@@ -234,7 +234,7 @@ class SlackDelivery:
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": f"\U0001f4e1 News Radar — {briefing.date}",
+                    "text": f"\U0001f4e1 FeedFlow AI â€” {briefing.date}",
                     "emoji": True,
                 },
             },
@@ -257,7 +257,7 @@ class SlackDelivery:
             headline = si.ai_headline or item.title
             story_lines.append(
                 f"*{rank}.* <{item.url}|{headline[:100]}> "
-                f"_{si.scored.ai_score}/10 · {item.source_name}_"
+                f"_{si.scored.ai_score}/10 Â· {item.source_name}_"
             )
 
         blocks.append({
@@ -274,8 +274,8 @@ class SlackDelivery:
             "elements": [{
                 "type": "mrkdwn",
                 "text": (
-                    f"Fetched {briefing.total_fetched} stories · "
-                    f"{briefing.total_scored} passed threshold · "
+                    f"Fetched {briefing.total_fetched} stories Â· "
+                    f"{briefing.total_scored} passed threshold Â· "
                     f"Briefing: {len(briefing.items)} stories"
                 ),
             }],
@@ -336,3 +336,4 @@ class CustomWebhookDelivery:
                 for rank, si in enumerate(briefing.items, 1)
             ],
         }
+

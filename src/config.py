@@ -1,10 +1,10 @@
-"""
+﻿"""
 src/config.py
 =============
 Centralised application configuration loaded from environment variables.
 
 Uses Pydantic BaseSettings so every setting is:
-  - Type-validated at startup (wrong type → clear error, not a mystery crash)
+  - Type-validated at startup (wrong type â†’ clear error, not a mystery crash)
   - Documented in one place
   - Overridable via .env file or real environment variables
 
@@ -24,7 +24,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """
-    All runtime configuration for News Radar.
+    All runtime configuration for FeedFlow AI.
 
     Values are loaded (in priority order) from:
       1. Real environment variables
@@ -243,6 +243,7 @@ class Settings(BaseSettings):
 
 
 # ---------------------------------------------------------------------------
-# Module-level singleton — import this everywhere
+# Module-level singleton â€” import this everywhere
 # ---------------------------------------------------------------------------
 settings = Settings()
+

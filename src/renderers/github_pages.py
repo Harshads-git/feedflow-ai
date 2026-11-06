@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/renderers/github_pages.py
 ==============================
 Writes rendered briefings to the docs/ directory for GitHub Pages hosting.
@@ -14,17 +14,17 @@ GitHub Pages setup:
 
 Directory layout:
     docs/
-      index.html           ← latest briefing with search bar + topic nav
-      archive.html         ← index of all past briefings
-      topics.html          ← [NEW] topic index page (Day 28)
-      topic-{slug}.html    ← [NEW] per-topic archive pages (Day 28)
-      search.json          ← [NEW] lightweight search index (Day 28)
-      YYYY-MM-DD.html      ← each daily briefing (permanent URL)
-      YYYY-MM-DD.md        ← raw markdown (for repo browsing)
+      index.html           â† latest briefing with search bar + topic nav
+      archive.html         â† index of all past briefings
+      topics.html          â† [NEW] topic index page (Day 28)
+      topic-{slug}.html    â† [NEW] per-topic archive pages (Day 28)
+      search.json          â† [NEW] lightweight search index (Day 28)
+      YYYY-MM-DD.html      â† each daily briefing (permanent URL)
+      YYYY-MM-DD.md        â† raw markdown (for repo browsing)
 
 Why docs/?
   GitHub Pages serves from `docs/` on the same branch as your source,
-  so both code and rendered output live in the same repo — no separate
+  so both code and rendered output live in the same repo â€” no separate
   gh-pages branch needed. Simple, easy to audit, easy to roll back.
 
 Usage:
@@ -87,7 +87,7 @@ class GitHubPagesWriter:
         Returns
         -------
         dict[str, Path]
-            Mapping of output name → absolute Path for each file written:
+            Mapping of output name â†’ absolute Path for each file written:
             {"daily_html", "daily_md", "index_html", "archive_html",
              "topics_html", "search_json"} + one entry per topic page.
         """
@@ -146,7 +146,7 @@ class GitHubPagesWriter:
         """
         Scan all per-date JSON briefings in docs/ for topic information.
 
-        Returns a dict mapping topic_slug → list of story dicts:
+        Returns a dict mapping topic_slug â†’ list of story dicts:
           {"title", "url", "date", "ai_score", "source_name"}
 
         Only topics with at least 2 appearances are returned.
@@ -178,7 +178,7 @@ class GitHubPagesWriter:
                     "topic_label": topic,
                 })
 
-        # Keep only topics with ≥2 stories
+        # Keep only topics with â‰¥2 stories
         return {slug: stories for slug, stories in topic_map.items() if len(stories) >= 2}
 
     # ------------------------------------------------------------------
@@ -255,7 +255,7 @@ class GitHubPagesWriter:
             })
 
         all_entries = existing + new_entries
-        # Keep last 90 days → cap at 90 * 30 items = 2700 max
+        # Keep last 90 days â†’ cap at 90 * 30 items = 2700 max
         all_entries = all_entries[-2700:]
 
         path = search_file
@@ -269,7 +269,7 @@ class GitHubPagesWriter:
         """
         Write docs/topic-{slug}.html for each topic in the current briefing.
 
-        Returns a dict mapping "topic_{slug}" → Path.
+        Returns a dict mapping "topic_{slug}" â†’ Path.
         """
         outputs: dict[str, Path] = {}
         # Collect topics from this briefing
@@ -309,7 +309,7 @@ class GitHubPagesWriter:
         return outputs
 
     def _write_topics_index(self) -> Path:
-        """Write docs/topics.html — a grid of all known topics with story counts."""
+        """Write docs/topics.html â€” a grid of all known topics with story counts."""
         all_topics = self.collect_all_topics()
         html_str = _build_topics_index_html(all_topics)
         path = self.docs_dir / "topics.html"
@@ -347,7 +347,7 @@ class GitHubPagesWriter:
     # ------------------------------------------------------------------
 
     def _write_file(self, path: Path, content: str) -> None:
-        """Atomically write content to path (tmp → rename)."""
+        """Atomically write content to path (tmp â†’ rename)."""
         tmp = path.with_suffix(path.suffix + ".tmp")
         try:
             tmp.write_text(content, encoding="utf-8")
@@ -386,7 +386,7 @@ def _build_archive_html(dates: list[str]) -> str:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>News Radar — Archive</title>
+  <title>FeedFlow AI â€” Archive</title>
   <style>
     :root {{
       --bg: #0f1117; --surface: #1a1d27; --border: #2d3147;
@@ -412,7 +412,7 @@ def _build_archive_html(dates: list[str]) -> str:
 </head>
 <body>
 <div class="container">
-  <h1>News Radar</h1>
+  <h1>FeedFlow AI</h1>
   <p class="meta">Archive of {count} daily briefings &mdash; {html.escape(generated)}</p>
   <ul class="archive-list">
 {rows}  </ul>
@@ -434,7 +434,7 @@ def _build_archive_html(dates: list[str]) -> str:
 def _topic_slug(topic: str) -> str:
     """Convert a topic label to a URL-safe slug.
 
-    Example: "Machine Learning" → "machine-learning"
+    Example: "Machine Learning" â†’ "machine-learning"
     """
     slug = topic.lower().strip()
     slug = re.sub(r"[^a-z0-9]+", "-", slug)
@@ -567,8 +567,8 @@ def _build_topic_page_html(topic_label: str, slug: str, stories: list[dict]) -> 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>News Radar — {label_esc}</title>
-  <meta name="description" content="All stories tagged with {label_esc} from News Radar.">
+  <title>FeedFlow AI â€” {label_esc}</title>
+  <meta name="description" content="All stories tagged with {label_esc} from FeedFlow AI.">
   <style>
     :root {{
       --bg: #0f1117; --surface: #1a1d27; --border: #2d3147;
@@ -601,7 +601,7 @@ def _build_topic_page_html(topic_label: str, slug: str, stories: list[dict]) -> 
 </head>
 <body>
 <div class="container">
-  <h1>News Radar</h1>
+  <h1>FeedFlow AI</h1>
   <span class="topic-badge">#{label_esc}</span>
   <p class="meta">{total} stories &mdash; {generated}</p>
   <ul class="story-list">
@@ -644,8 +644,8 @@ def _build_topics_index_html(all_topics: dict[str, list[dict]]) -> str:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>News Radar — Topics</title>
-  <meta name="description" content="Browse all news topics tracked by News Radar.">
+  <title>FeedFlow AI â€” Topics</title>
+  <meta name="description" content="Browse all news topics tracked by FeedFlow AI.">
   <style>
     :root {{
       --bg: #0f1117; --surface: #1a1d27; --border: #2d3147;
@@ -684,7 +684,7 @@ def _build_topics_index_html(all_topics: dict[str, list[dict]]) -> str:
 </head>
 <body>
 <div class="container">
-  <h1>News Radar</h1>
+  <h1>FeedFlow AI</h1>
   <p class="meta">{total_topics} topics tracked &mdash; {generated}</p>
   <div class="topics-grid">
 {cards}  </div>
@@ -698,3 +698,4 @@ def _build_topics_index_html(all_topics: dict[str, list[dict]]) -> str:
 </div>
 </body>
 </html>"""
+

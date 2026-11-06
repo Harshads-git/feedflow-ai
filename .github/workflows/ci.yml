@@ -1,10 +1,10 @@
-# .github/workflows/ci.yml
+﻿# .github/workflows/ci.yml
 # ==========================
-# Continuous Integration — runs on every push and pull request.
+# Continuous Integration â€” runs on every push and pull request.
 #
 # Jobs:
-#   lint     → ruff format + lint check (fast, no dependencies)
-#   test     → uv sync + pytest with coverage
+#   lint     â†’ ruff format + lint check (fast, no dependencies)
+#   test     â†’ uv sync + pytest with coverage
 #
 # The test job matrix covers Python 3.11 and 3.12 to catch
 # compatibility issues early.
@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Job 1: Lint + Format check (fast — no dependencies needed)
+  # Job 1: Lint + Format check (fast â€” no dependencies needed)
   # ---------------------------------------------------------------------------
   lint:
     name: Lint & Format (ruff)
@@ -118,3 +118,4 @@ jobs:
           print(f'- **Total coverage:** {pct:.1f}%')
           print(f'- **Lines measured:** {lines}')
           " >> $GITHUB_STEP_SUMMARY
+

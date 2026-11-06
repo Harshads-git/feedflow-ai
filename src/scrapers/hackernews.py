@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/scrapers/hackernews.py
 ==========================
 Hacker News scraper using the official Firebase REST API.
@@ -10,12 +10,12 @@ Why the HN API instead of the RSS feed?
     which the RSS feed omits. These engagement signals are valuable for
     AI scoring (a story with 500 points is likely more worth reading).
   - The API lets us choose between topstories, newstories, beststories,
-    and askstories — the RSS only has "frontpage".
+    and askstories â€” the RSS only has "frontpage".
 
 Architecture:
-  Step 1: GET /v0/topstories.json → list of up to 500 story IDs
+  Step 1: GET /v0/topstories.json â†’ list of up to 500 story IDs
   Step 2: GET /v0/item/{id}.json for each ID (concurrently, up to limit)
-  Step 3: Map each item JSON → NewsItem
+  Step 3: Map each item JSON â†’ NewsItem
 
 Concurrency: We fetch individual items concurrently using asyncio.gather()
 with a semaphore to cap simultaneous connections at MAX_CONCURRENT requests.
@@ -39,7 +39,7 @@ from src.scrapers.base import BaseScraper
 # ---------------------------------------------------------------------------
 
 _BASE_URL = "https://hacker-news.firebaseio.com/v0"
-_USER_AGENT = "NewsRadar/0.1 (+https://github.com/Harshads-git/news-radar)"
+_USER_AGENT = "NewsRadar/0.1 (+https://github.com/Harshads-git/feedflow-ai)"
 _REQUEST_TIMEOUT = 15.0
 _MAX_CONCURRENT = 10   # max simultaneous item fetches
 _MAX_RETRIES = 3
@@ -58,7 +58,7 @@ class HackerNewsScraper(BaseScraper):
     story object concurrently (bounded by _MAX_CONCURRENT semaphore).
 
     Supports these HN story feeds (set via source config name/tags):
-      - topstories  (default — the HN frontpage)
+      - topstories  (default â€” the HN frontpage)
       - newstories  (newest submissions)
       - beststories (all-time highest scoring)
       - askstories  (Ask HN posts only)
@@ -204,15 +204,15 @@ class HackerNewsScraper(BaseScraper):
         Convert a raw HN Firebase item dict into a NewsItem.
 
         HN item fields:
-          id        → unique integer ID
-          type      → "story", "comment", "ask", "job", "poll"
-          title     → story headline
-          url       → external URL (absent for Ask HN — use HN thread URL)
-          score     → upvote count
-          by        → author username
-          time      → Unix timestamp
-          descendants → total comment count
-          text      → body text for Ask HN / Show HN posts
+          id        â†’ unique integer ID
+          type      â†’ "story", "comment", "ask", "job", "poll"
+          title     â†’ story headline
+          url       â†’ external URL (absent for Ask HN â€” use HN thread URL)
+          score     â†’ upvote count
+          by        â†’ author username
+          time      â†’ Unix timestamp
+          descendants â†’ total comment count
+          text      â†’ body text for Ask HN / Show HN posts
         """
         # Skip non-story types and deleted/dead items
         item_type = data.get("type", "")
@@ -227,14 +227,14 @@ class HackerNewsScraper(BaseScraper):
         if not title or not story_id:
             return None
 
-        # External URL (may be absent for Ask HN — use the discussion page)
+        # External URL (may be absent for Ask HN â€” use the discussion page)
         hn_url = f"https://news.ycombinator.com/item?id={story_id}"
         url = data.get("url") or hn_url
 
         # Comments URL always points to the HN thread
         comments_url = hn_url
 
-        # Convert Unix timestamp → UTC datetime
+        # Convert Unix timestamp â†’ UTC datetime
         published_at: datetime | None = None
         if ts := data.get("time"):
             published_at = datetime.fromtimestamp(int(ts), tz=timezone.utc)
@@ -261,3 +261,4 @@ class HackerNewsScraper(BaseScraper):
             tags=source.tags,
             raw=data,
         )
+

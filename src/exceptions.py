@@ -1,26 +1,26 @@
-"""
+﻿"""
 src/exceptions.py
 =================
-Custom exception hierarchy for the News Radar pipeline.
+Custom exception hierarchy for the FeedFlow AI pipeline.
 
 Design principles:
-  1. Every exception inherits from NewsRadarError — catch-all for the pipeline.
+  1. Every exception inherits from NewsRadarError â€” catch-all for the pipeline.
   2. Exceptions are named after the pipeline STAGE that raises them, not the
      root cause. This makes error handling at the orchestrator level clear.
   3. Exceptions carry structured context (source_id, model, url) so log messages
      are self-contained without needing to re-read variables.
 
 Hierarchy:
-    NewsRadarError              ← base for all pipeline errors
-      FetchError                ← raised by scrapers (network, parsing)
-        RateLimitError          ← HTTP 429 from any source API
-        ParseError              ← malformed feed / unexpected API shape
-      AIError                   ← raised by AI provider calls
-        TokenLimitError         ← prompt too long for model context window
-        AIProviderError         ← API key invalid, quota exceeded, 5xx
-      StorageError              ← raised by storage layer (read/write)
-      ConfigError               ← raised at startup for bad configuration
-      DeliveryError             ← raised by email/webhook delivery
+    NewsRadarError              â† base for all pipeline errors
+      FetchError                â† raised by scrapers (network, parsing)
+        RateLimitError          â† HTTP 429 from any source API
+        ParseError              â† malformed feed / unexpected API shape
+      AIError                   â† raised by AI provider calls
+        TokenLimitError         â† prompt too long for model context window
+        AIProviderError         â† API key invalid, quota exceeded, 5xx
+      StorageError              â† raised by storage layer (read/write)
+      ConfigError               â† raised at startup for bad configuration
+      DeliveryError             â† raised by email/webhook delivery
 
 Usage:
     from src.exceptions import FetchError, AIError
@@ -45,7 +45,7 @@ from __future__ import annotations
 
 class NewsRadarError(Exception):
     """
-    Base class for all News Radar exceptions.
+    Base class for all FeedFlow AI exceptions.
 
     Provides a consistent ``context`` dict that subclasses populate with
     structured metadata (source_id, model, url, etc.) so log messages
@@ -293,7 +293,7 @@ class DeliveryError(NewsRadarError):
     """
     Raised when a delivery channel fails to send the briefing.
 
-    The orchestrator treats delivery errors as non-fatal — the briefing is
+    The orchestrator treats delivery errors as non-fatal â€” the briefing is
     saved to disk even if email or webhook delivery fails.
     """
 
@@ -306,3 +306,4 @@ class DeliveryError(NewsRadarError):
     ) -> None:
         super().__init__(message, channel=channel, **extra)
         self.channel = channel  # "email", "discord", "slack", "webhook"
+

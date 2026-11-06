@@ -1,4 +1,4 @@
-"""
+﻿"""
 src/search.py
 =============
 DuckDuckGo web search for fetching background context before AI summarization.
@@ -15,19 +15,19 @@ Why web context matters:
     "OpenAI announces a new project."
 
 Day 17 improvements over the original:
-  1. DISK CACHE — persists between pipeline runs. Stories that were seen
+  1. DISK CACHE â€” persists between pipeline runs. Stories that were seen
      yesterday don't need a fresh DDG call today. Cache is stored at
      data/cache/search-YYYY-MM-DD.json with 24h TTL by default.
 
-  2. PARALLEL BATCH — fetch_all_contexts() runs all queries concurrently
+  2. PARALLEL BATCH â€” fetch_all_contexts() runs all queries concurrently
      but with a semaphore-controlled concurrency limit (_MAX_CONCURRENT=5)
      to avoid overwhelming DDG and triggering rate limits.
 
-  3. DDGS TEXT FALLBACK — when the Instant Answer API returns empty, we
+  3. DDGS TEXT FALLBACK â€” when the Instant Answer API returns empty, we
      fall back to a `ddgs.text()` search and grab the first result's body.
      This significantly improves context coverage for niche tech stories.
 
-  4. CONTEXT STATS — returns a ContextStats dataclass so the orchestrator
+  4. CONTEXT STATS â€” returns a ContextStats dataclass so the orchestrator
      can log "12/15 stories enriched, 3 cache hits".
 
 Usage:
@@ -36,7 +36,7 @@ Usage:
     # Single story
     context = await fetch_web_context("OpenAI Project Strawberry reasoning model")
 
-    # Batch — all stories in parallel with caching
+    # Batch â€” all stories in parallel with caching
     from pathlib import Path
     contexts = await fetch_all_contexts(
         ["query 1", "query 2", "query 3"],
@@ -64,7 +64,7 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _DDG_URL = "https://api.duckduckgo.com/"
-_USER_AGENT = "NewsRadar/0.1 (+https://github.com/Harshads-git/news-radar)"
+_USER_AGENT = "NewsRadar/0.1 (+https://github.com/Harshads-git/feedflow-ai)"
 _REQUEST_TIMEOUT = 8.0
 _MAX_CONTEXT_CHARS = 600
 _MAX_CONCURRENT = 5          # Max parallel DDG requests
@@ -132,9 +132,9 @@ class _DiskCache:
 
     Why JSON instead of SQLite?
       - Zero dependencies (no sqlalchemy, no sqlite3 schema migration)
-      - Human readable — you can cat the file and see what's cached
+      - Human readable â€” you can cat the file and see what's cached
       - Safe for single-process writes (one pipeline runs at a time)
-      - Small enough — 300 queries * 600 chars ≈ 200KB per day
+      - Small enough â€” 300 queries * 600 chars â‰ˆ 200KB per day
     """
 
     def __init__(self, cache_dir: Path | None = None, cache_date: date | None = None) -> None:
@@ -219,7 +219,7 @@ class _DiskCache:
 
 
 # ---------------------------------------------------------------------------
-# Public API — single query
+# Public API â€” single query
 # ---------------------------------------------------------------------------
 
 
@@ -234,7 +234,7 @@ async def fetch_web_context(
     Fetch a short background context snippet from DuckDuckGo for the query.
 
     Lookup order:
-      1. In-memory cache (fastest — same query seen earlier this run)
+      1. In-memory cache (fastest â€” same query seen earlier this run)
       2. Disk cache (avoids API call for queries seen in past 24h)
       3. DuckDuckGo Instant Answer API
       4. DDGS text() fallback (if Instant Answer returns empty)
@@ -255,7 +255,7 @@ async def fetch_web_context(
 
     Notes
     -----
-    - Never raises exceptions — returns "" on any error.
+    - Never raises exceptions â€” returns "" on any error.
     """
     if not query or not query.strip():
         return ""
@@ -284,7 +284,7 @@ async def fetch_web_context(
         _stats.api_calls += 1
     context = await _fetch_ddg_context(query, max_chars, _stats)
 
-    # Store result (even empty — to avoid re-querying failed lookups)
+    # Store result (even empty â€” to avoid re-querying failed lookups)
     _memory_cache[cache_key] = context
     if disk is not None:
         disk.set(cache_key, context)
@@ -293,7 +293,7 @@ async def fetch_web_context(
 
 
 # ---------------------------------------------------------------------------
-# Public API — batch (parallel with concurrency limit)
+# Public API â€” batch (parallel with concurrency limit)
 # ---------------------------------------------------------------------------
 
 
@@ -447,7 +447,7 @@ async def _fetch_ddgs_text(query: str, max_chars: int) -> str:
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(None, _search)
     except ImportError:
-        log.debug("ddgs not installed — skipping text search fallback")
+        log.debug("ddgs not installed â€” skipping text search fallback")
         return ""
     except Exception as e:
         log.debug("DDGS text search failed: %s", e)
@@ -464,7 +464,7 @@ def _extract_best_text(data: dict, max_chars: int) -> str:
     Extract the best available text snippet from a DDG API response dict.
 
     Priority order:
-      1. AbstractText (Wikipedia abstract — richest context)
+      1. AbstractText (Wikipedia abstract â€” richest context)
       2. Abstract (shorter abstract)
       3. Answer (direct answer for factual queries)
       4. First RelatedTopics text (secondary result)
@@ -493,3 +493,4 @@ def _extract_best_text(data: dict, max_chars: int) -> str:
 def _hash_query(query: str) -> str:
     """Return a short hash of the query string for use as a cache key."""
     return hashlib.md5(query.lower().encode(), usedforsecurity=False).hexdigest()[:16]
+

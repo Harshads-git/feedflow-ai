@@ -1,7 +1,7 @@
-"""
+﻿"""
 src/main.py
 ===========
-CLI entry point for the News Radar pipeline.
+CLI entry point for the FeedFlow AI pipeline.
 
 Invocation:
     uv run python -m src.main --run
@@ -12,7 +12,7 @@ Invocation:
     uv run python -m src.main --status
 
 Or via the installed script:
-    news-radar --run
+    feedflow-ai --run
 
 The main() function is the only public API of this module.
 It configures logging, validates the environment, then dispatches
@@ -30,34 +30,34 @@ from pathlib import Path
 def _build_parser() -> argparse.ArgumentParser:
     """Construct and return the argument parser for the CLI."""
     parser = argparse.ArgumentParser(
-        prog="news-radar",
+        prog="feedflow-ai",
         description=(
-            "📡 News Radar — AI-powered personal news briefing pipeline.\n"
+            "ðŸ“¡ FeedFlow AI â€” AI-powered personal news briefing pipeline.\n"
             "Fetches, scores, and summarizes stories from RSS, HN, and Reddit."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  news-radar --run              Run the full pipeline (fetch → score → summarize → deliver)
-  news-radar --dry-run          Run pipeline but skip saving and delivery
-  news-radar --setup            Launch the interactive setup wizard
-  news-radar --status           Show last run info and current configuration
-  news-radar --briefing         Print the most recent briefing to the terminal
-  news-radar --sources-list     Display all configured sources with status
-  news-radar --config           Show full configuration and active delivery channels
-  news-radar --source-stats     Show per-source fetch health and error history
-  news-radar --cache-stats      Show AI score cache hit rate, size, and TTL
-  news-radar --cost-report      Show AI API cost report: daily and weekly spend
-  news-radar --retry-stats      Show circuit breaker events and throttle history
-  news-radar --preview-email    Render latest briefing as email HTML, open in browser
-  news-radar --check            Validate config and API keys (exit 0 if OK)
-  news-radar --version          Print version and exit
+  feedflow-ai --run              Run the full pipeline (fetch â†’ score â†’ summarize â†’ deliver)
+  feedflow-ai --dry-run          Run pipeline but skip saving and delivery
+  feedflow-ai --setup            Launch the interactive setup wizard
+  feedflow-ai --status           Show last run info and current configuration
+  feedflow-ai --briefing         Print the most recent briefing to the terminal
+  feedflow-ai --sources-list     Display all configured sources with status
+  feedflow-ai --config           Show full configuration and active delivery channels
+  feedflow-ai --source-stats     Show per-source fetch health and error history
+  feedflow-ai --cache-stats      Show AI score cache hit rate, size, and TTL
+  feedflow-ai --cost-report      Show AI API cost report: daily and weekly spend
+  feedflow-ai --retry-stats      Show circuit breaker events and throttle history
+  feedflow-ai --preview-email    Render latest briefing as email HTML, open in browser
+  feedflow-ai --check            Validate config and API keys (exit 0 if OK)
+  feedflow-ai --version          Print version and exit
 
   # Advanced:
-  news-radar --run --date 2026-07-10        Re-run pipeline for a specific date
-  news-radar --run --no-enrich             Skip web context fetching (faster)
-  news-radar --run --log-level DEBUG       Verbose pipeline output
-  news-radar --dry-run --sources custom.json  Test with a different sources file
+  feedflow-ai --run --date 2026-07-10        Re-run pipeline for a specific date
+  feedflow-ai --run --no-enrich             Skip web context fetching (faster)
+  feedflow-ai --run --log-level DEBUG       Verbose pipeline output
+  feedflow-ai --dry-run --sources custom.json  Test with a different sources file
 """,
     )
 
@@ -66,7 +66,7 @@ Examples:
     action.add_argument(
         "--run",
         action="store_true",
-        help="Run the full news radar pipeline end-to-end.",
+        help="Run the full FeedFlow AI pipeline end-to-end.",
     )
     action.add_argument(
         "--dry-run",
@@ -86,7 +86,7 @@ Examples:
     action.add_argument(
         "--version",
         action="store_true",
-        help="Print the News Radar version and exit.",
+        help="Print the FeedFlow AI version and exit.",
     )
     action.add_argument(
         "--check",
@@ -181,14 +181,14 @@ def _handle_version() -> None:
     try:
         from importlib.metadata import version
 
-        ver = version("news-radar")
+        ver = version("feedflow-ai")
     except Exception:
         try:
             from src.__version__ import __version__
             ver = __version__
         except Exception:
             ver = "1.0.0"
-    print(f"news-radar {ver}")
+    print(f"feedflow-ai {ver}")
 
 
 def _handle_status(settings: object, log: object) -> None:
@@ -201,7 +201,7 @@ def _handle_status(settings: object, log: object) -> None:
     s: Settings = settings  # type: ignore[assignment]
 
     # ---- Config summary ----
-    table = Table(title="News Radar Configuration", show_header=True, header_style="bold cyan")
+    table = Table(title="FeedFlow AI Configuration", show_header=True, header_style="bold cyan")
     table.add_column("Setting", style="cyan", min_width=22)
     table.add_column("Value", style="white")
 
@@ -273,7 +273,7 @@ def _handle_status(settings: object, log: object) -> None:
         console.print()
         console.print(timeline_panel)
     else:
-        console.print("\n[dim]No run timeline available yet — run the pipeline first.[/dim]")
+        console.print("\n[dim]No run timeline available yet â€” run the pipeline first.[/dim]")
 
     # ---- 7-day aggregate stats ----
     agg = aggregate_runs(s.data_dir, days=7)
@@ -308,11 +308,11 @@ def _handle_setup(log: object) -> None:
     sources_path = Path("data/sources.json")
 
     # Guard: Rich prompts require an interactive terminal.
-    # In CI or subprocess test environments, stdin is a pipe — exit gracefully.
+    # In CI or subprocess test environments, stdin is a pipe â€” exit gracefully.
     if not sys.stdin.isatty():
         print("Setup wizard requires an interactive terminal.")
         print(f"Copy .env.example to {env_path} and edit it manually, or run:")
-        print("  news-radar --setup")
+        print("  feedflow-ai --setup")
         return
 
     run_wizard(env_path=env_path, sources_path=sources_path)
@@ -346,23 +346,23 @@ def _handle_check(settings: object, log: object) -> int:
     ai_warnings = s.validate_ai_config()
     if ai_warnings:
         for w in ai_warnings:
-            console.print(f"  [red]✗[/red] {w}")
+            console.print(f"  [red]âœ—[/red] {w}")
             issues.append(w)
     else:
-        console.print(f"  [green]✓[/green] AI key OK (provider: {s.active_model_provider}, model: {s.ai_model})")
+        console.print(f"  [green]âœ“[/green] AI key OK (provider: {s.active_model_provider}, model: {s.ai_model})")
 
     # ---- Check 2: sources.json ----
     src_issues = validate_sources_file(s.sources_file)
     if src_issues:
         for issue in src_issues:
             if "Warning" in issue:
-                console.print(f"  [yellow]⚠[/yellow] {issue}")
+                console.print(f"  [yellow]âš [/yellow] {issue}")
                 warnings.append(issue)
             else:
-                console.print(f"  [red]✗[/red] {issue}")
+                console.print(f"  [red]âœ—[/red] {issue}")
                 issues.append(issue)
     else:
-        console.print(f"  [green]✓[/green] sources.json OK ({s.sources_file})")
+        console.print(f"  [green]âœ“[/green] sources.json OK ({s.sources_file})")
 
     # ---- Check 3: data/ directory writable ----
     try:
@@ -370,10 +370,10 @@ def _handle_check(settings: object, log: object) -> int:
         test_file = s.data_dir / ".write_test"
         test_file.write_text("ok", encoding="utf-8")
         test_file.unlink()
-        console.print(f"  [green]✓[/green] data/ directory writable ({s.data_dir})")
+        console.print(f"  [green]âœ“[/green] data/ directory writable ({s.data_dir})")
     except OSError as e:
         msg = f"data/ directory not writable: {e}"
-        console.print(f"  [red]✗[/red] {msg}")
+        console.print(f"  [red]âœ—[/red] {msg}")
         issues.append(msg)
 
     # ---- Check 4: Delivery channels (informational) ----
@@ -387,25 +387,25 @@ def _handle_check(settings: object, log: object) -> int:
     if s.custom_webhook_url:
         channels.append("custom")
     if channels:
-        console.print(f"  [green]✓[/green] Delivery: {', '.join(channels)}")
+        console.print(f"  [green]âœ“[/green] Delivery: {', '.join(channels)}")
     else:
-        console.print("  [dim]–[/dim] No delivery channels configured (briefing saved to docs/ only)")
+        console.print("  [dim]â€“[/dim] No delivery channels configured (briefing saved to docs/ only)")
 
     # ---- Check 5: GitHub Pages output dir ----
     if s.github_pages_enabled:
-        console.print(f"  [green]✓[/green] GitHub Pages enabled → {s.docs_dir}")
+        console.print(f"  [green]âœ“[/green] GitHub Pages enabled â†’ {s.docs_dir}")
     else:
-        console.print("  [dim]–[/dim] GitHub Pages output disabled")
+        console.print("  [dim]â€“[/dim] GitHub Pages output disabled")
 
     # ---- Summary ----
     console.print()
     if issues:
-        console.print(f"[red]✗ {len(issues)} issue(s) found. Fix before running --run.[/red]")
+        console.print(f"[red]âœ— {len(issues)} issue(s) found. Fix before running --run.[/red]")
         return 1
     if warnings:
-        console.print(f"[yellow]⚠ {len(warnings)} warning(s). Pipeline will run but may produce no results.[/yellow]")
+        console.print(f"[yellow]âš  {len(warnings)} warning(s). Pipeline will run but may produce no results.[/yellow]")
     else:
-        console.print("[green]✓ All checks passed. Ready to run: news-radar --run[/green]")
+        console.print("[green]âœ“ All checks passed. Ready to run: feedflow-ai --run[/green]")
     return 0
 
 
@@ -419,7 +419,7 @@ async def _handle_run(
     enrich_context: bool = True,
 ) -> int:
     """
-    Main pipeline runner — invokes the Orchestrator.
+    Main pipeline runner â€” invokes the Orchestrator.
 
     Returns the exit code (0 = success, 1 = error).
     """
@@ -473,7 +473,7 @@ async def _handle_run(
     )
 
     if briefing is None:
-        log.error("Pipeline failed — see logs above for details.")  # type: ignore[attr-defined]
+        log.error("Pipeline failed â€” see logs above for details.")  # type: ignore[attr-defined]
         return 1
 
     return 0
@@ -509,13 +509,13 @@ def _handle_briefing(settings: "Settings", log: object) -> None:
     if briefing is None:
         console.print(
             "[yellow]No briefing found.[/yellow] "
-            "Run [bold]news-radar --run[/bold] to generate one."
+            "Run [bold]feedflow-ai --run[/bold] to generate one."
         )
         return
 
     # ---- Header ----
     console.print()
-    console.print(Rule(f"[bold cyan]📡 News Radar Briefing — {briefing.date}[/bold cyan]"))
+    console.print(Rule(f"[bold cyan]ðŸ“¡ FeedFlow AI Briefing â€” {briefing.date}[/bold cyan]"))
     console.print()
 
     # ---- Executive summary ----
@@ -537,27 +537,27 @@ def _handle_briefing(settings: "Settings", log: object) -> None:
         console.print(Rule("[bold]Stories by Topic[/bold]"))
         console.print()
         for cluster in clusters:
-            console.print(f"[bold magenta]▸ {cluster.name}[/bold magenta] ({cluster.size} {'story' if cluster.size == 1 else 'stories'})")  # noqa: E501
+            console.print(f"[bold magenta]â–¸ {cluster.name}[/bold magenta] ({cluster.size} {'story' if cluster.size == 1 else 'stories'})")  # noqa: E501
             for si in cluster.items:
                 score = si.scored.ai_score
                 headline = si.ai_headline or si.title
                 source = si.scored.item.source_name
                 summary_text = (si.ai_summary or "")[:120].rstrip()
                 if summary_text and len(si.ai_summary or "") > 120:
-                    summary_text += "…"
-                console.print(f"  [bold]{headline}[/bold] [dim]({source} · {score}/10)[/dim]")
+                    summary_text += "â€¦"
+                console.print(f"  [bold]{headline}[/bold] [dim]({source} Â· {score}/10)[/dim]")
                 if summary_text:
                     console.print(f"  [dim]{summary_text}[/dim]")
                 console.print(f"  [link={si.scored.item.url}]{si.scored.item.url}[/link]")
                 console.print()
     else:
-        # No clusters → flat list
+        # No clusters â†’ flat list
         console.print(Rule("[bold]Stories[/bold]"))
         console.print()
         for si in briefing.items:
             headline = si.ai_headline or si.title
             score = si.scored.ai_score
-            console.print(f"  [bold]{headline}[/bold] [dim]({si.scored.item.source_name} · {score}/10)[/dim]")
+            console.print(f"  [bold]{headline}[/bold] [dim]({si.scored.item.source_name} Â· {score}/10)[/dim]")
             console.print(f"  [link={si.scored.item.url}]{si.scored.item.url}[/link]")
             console.print()
 
@@ -566,7 +566,7 @@ def _handle_briefing(settings: "Settings", log: object) -> None:
     topics_str = ", ".join(briefing.top_topics) or "(none)"
     console.print(
         f"[dim]Top topics: {topics_str}  |  "
-        f"{briefing.total_fetched} fetched · {briefing.total_scored} scored · "
+        f"{briefing.total_fetched} fetched Â· {briefing.total_scored} scored Â· "
         f"{len(briefing.items)} in briefing  |  "
         f"Generated: {briefing.generated_at.strftime('%Y-%m-%d %H:%M UTC')}[/dim]"
     )
@@ -603,13 +603,13 @@ def _handle_sources_list(settings: "Settings", log: object) -> None:
     sources_path = settings.sources_file
 
     console.print()
-    console.print(Rule(f"[bold cyan]📡 Configured Sources — {sources_path}[/bold cyan]"))
+    console.print(Rule(f"[bold cyan]ðŸ“¡ Configured Sources â€” {sources_path}[/bold cyan]"))
     console.print()
 
     if not sources_path.exists():
         console.print(
             f"[yellow]Sources file not found:[/yellow] {sources_path}\n"
-            "Run [bold]news-radar --setup[/bold] to create it."
+            "Run [bold]feedflow-ai --setup[/bold] to create it."
         )
         return
 
@@ -644,8 +644,8 @@ def _handle_sources_list(settings: "Settings", log: object) -> None:
         if enabled:
             enabled_count += 1
 
-        status = "[green]● enabled[/green]" if enabled else "[red]○ disabled[/red]"
-        tags = ", ".join(src.get("tags", [])) or "[dim]—[/dim]"
+        status = "[green]â— enabled[/green]" if enabled else "[red]â—‹ disabled[/red]"
+        tags = ", ".join(src.get("tags", [])) or "[dim]â€”[/dim]"
         limit = str(src.get("limit", 30))
 
         src_type = src.get("type", "?")
@@ -657,7 +657,7 @@ def _handle_sources_list(settings: "Settings", log: object) -> None:
             location = "[dim]GitHub Trending[/dim]"
         else:
             url = src.get("url", "")
-            location = url if url else "[dim]—[/dim]"
+            location = url if url else "[dim]â€”[/dim]"
 
         table.add_row(
             src.get("id", "?"),
@@ -672,7 +672,7 @@ def _handle_sources_list(settings: "Settings", log: object) -> None:
     console.print(table)
     console.print()
     console.print(
-        f"[dim]{enabled_count}/{len(sources)} sources enabled  •  "
+        f"[dim]{enabled_count}/{len(sources)} sources enabled  â€¢  "
         f"Edit [bold]{sources_path}[/bold] to add or disable sources[/dim]"
     )
     console.print()
@@ -707,11 +707,11 @@ def _handle_config(settings: "Settings", log: object) -> None:
     s = settings
 
     console.print()
-    console.print(Rule("[bold cyan]📡 News Radar Configuration[/bold cyan]"))
+    console.print(Rule("[bold cyan]ðŸ“¡ FeedFlow AI Configuration[/bold cyan]"))
     console.print()
 
     # ---- Section 1: Core pipeline ----
-    core = Table(title="⚙️  Pipeline", show_header=False, box=None, padding=(0, 2))
+    core = Table(title="âš™ï¸  Pipeline", show_header=False, box=None, padding=(0, 2))
     core.add_column("Setting", style="dim", min_width=24)
     core.add_column("Value", style="white")
     core.add_row("AI Model", f"[bold]{s.ai_model}[/bold]")
@@ -723,14 +723,14 @@ def _handle_config(settings: "Settings", log: object) -> None:
     console.print()
 
     # ---- Section 2: Storage & Paths ----
-    paths = Table(title="📁  Storage & Paths", show_header=False, box=None, padding=(0, 2))
+    paths = Table(title="ðŸ“  Storage & Paths", show_header=False, box=None, padding=(0, 2))
     paths.add_column("Name", style="dim", min_width=24)
     paths.add_column("Path", style="white")
 
     def _path_status(p: "Path") -> str:
         from pathlib import Path as P
         pp = P(p)
-        return f"{pp}  [green]✓[/green]" if pp.exists() else f"{pp}  [dim](not yet created)[/dim]"
+        return f"{pp}  [green]âœ“[/green]" if pp.exists() else f"{pp}  [dim](not yet created)[/dim]"
 
     paths.add_row("Sources File", _path_status(s.sources_file))
     paths.add_row("Data Dir", _path_status(s.data_dir))
@@ -741,12 +741,12 @@ def _handle_config(settings: "Settings", log: object) -> None:
     console.print()
 
     # ---- Section 3: AI Provider Keys ----
-    ai = Table(title="🤖  AI Provider Keys", show_header=False, box=None, padding=(0, 2))
+    ai = Table(title="ðŸ¤–  AI Provider Keys", show_header=False, box=None, padding=(0, 2))
     ai.add_column("Provider", style="dim", min_width=24)
     ai.add_column("Status", style="white")
 
     def _key_status(present: bool, label: str) -> str:
-        return f"[green]● configured[/green]  ({label})" if present else "[red]○ not set[/red]"
+        return f"[green]â— configured[/green]  ({label})" if present else "[red]â—‹ not set[/red]"
 
     ai.add_row("OpenAI", _key_status(s.has_openai, "OPENAI_API_KEY"))
     ai.add_row("Google Gemini", _key_status(s.has_gemini, "GEMINI_API_KEY"))
@@ -755,15 +755,15 @@ def _handle_config(settings: "Settings", log: object) -> None:
     console.print()
 
     # ---- Section 4: Delivery Channels ----
-    delivery = Table(title="📬  Delivery Channels", show_header=False, box=None, padding=(0, 2))
+    delivery = Table(title="ðŸ“¬  Delivery Channels", show_header=False, box=None, padding=(0, 2))
     delivery.add_column("Channel", style="dim", min_width=24)
     delivery.add_column("Status", style="white")
 
     def _delivery(active: bool, hint: str = "") -> str:
         if active:
-            return "[green]● active[/green]"
+            return "[green]â— active[/green]"
         note = f"  [dim]({hint})[/dim]" if hint else ""
-        return f"[dim]○ inactive[/dim]{note}"
+        return f"[dim]â—‹ inactive[/dim]{note}"
 
     delivery.add_row("Email (SMTP)", _delivery(s.has_email, "set SMTP_USER + SMTP_PASSWORD + EMAIL_TO"))
     delivery.add_row("Discord Webhook", _delivery(s.has_discord, "set DISCORD_WEBHOOK_URL"))
@@ -774,13 +774,13 @@ def _handle_config(settings: "Settings", log: object) -> None:
     )
     delivery.add_row(
         "GitHub Pages",
-        "[green]● enabled[/green]" if s.github_pages_enabled else "[dim]○ disabled[/dim]",
+        "[green]â— enabled[/green]" if s.github_pages_enabled else "[dim]â—‹ disabled[/dim]",
     )
     console.print(delivery)
     console.print()
 
     # ---- Section 5: User Interests & Logging ----
-    adv = Table(title="🔧  Advanced", show_header=False, box=None, padding=(0, 2))
+    adv = Table(title="ðŸ”§  Advanced", show_header=False, box=None, padding=(0, 2))
     adv.add_column("Setting", style="dim", min_width=24)
     adv.add_column("Value", style="white")
     adv.add_row("Log Level", s.log_level)
@@ -794,7 +794,7 @@ def _handle_config(settings: "Settings", log: object) -> None:
     console.print()
     console.print(
         "[dim]Settings are loaded from [bold].env[/bold] in the project root. "
-        "Run [bold]news-radar --setup[/bold] to reconfigure.[/dim]"
+        "Run [bold]feedflow-ai --setup[/bold] to reconfigure.[/dim]"
     )
     console.print()
 
@@ -813,9 +813,9 @@ def _handle_source_stats(settings: "Settings", log: object) -> None:
       - Source ID
       - Total fetch attempts
       - Total successes / errors
-      - Success rate (colour-coded: green ≥90%, yellow ≥70%, red <70%)
+      - Success rate (colour-coded: green â‰¥90%, yellow â‰¥70%, red <70%)
       - Average items per successful fetch
-      - Consecutive error streak (red if ≥ threshold)
+      - Consecutive error streak (red if â‰¥ threshold)
       - Last recorded error (truncated)
       - Last seen date
 
@@ -835,13 +835,13 @@ def _handle_source_stats(settings: "Settings", log: object) -> None:
     summary = health.source_summary(days=30)
 
     console.print()
-    console.print(Rule("[bold cyan]📡 Source Health Statistics (last 30 days)[/bold cyan]"))
+    console.print(Rule("[bold cyan]ðŸ“¡ Source Health Statistics (last 30 days)[/bold cyan]"))
     console.print()
 
     if not summary:
         console.print(
             "[yellow]No source health data found.[/yellow]\n"
-            "Run [bold]news-radar --run[/bold] to collect statistics."
+            "Run [bold]feedflow-ai --run[/bold] to collect statistics."
         )
         console.print()
         return
@@ -873,14 +873,14 @@ def _handle_source_stats(settings: "Settings", log: object) -> None:
 
         consec = stats["consecutive_errors"]
         if consec >= CONSECUTIVE_ERROR_THRESHOLD:
-            consec_str = f"[bold red]{consec} ⚠[/bold red]"
+            consec_str = f"[bold red]{consec} âš [/bold red]"
         elif consec > 0:
             consec_str = f"[yellow]{consec}[/yellow]"
         else:
             consec_str = "[green]0[/green]"
 
         ok_err = f"{stats['total_successes']} / {stats['total_errors']}"
-        last_error = stats.get("last_error") or "[dim]—[/dim]"
+        last_error = stats.get("last_error") or "[dim]â€”[/dim]"
         if last_error and len(last_error) > 50:
             last_error = last_error[:47] + "..."
 
@@ -917,9 +917,9 @@ def _handle_source_stats(settings: "Settings", log: object) -> None:
     if disabled_candidates:
         parts.append(
             f"[bold red]{disabled_candidates} should be disabled[/bold red] "
-            f"(≥{CONSECUTIVE_ERROR_THRESHOLD} consecutive errors)"
+            f"(â‰¥{CONSECUTIVE_ERROR_THRESHOLD} consecutive errors)"
         )
-    console.print("  " + "  •  ".join(parts) + "[/dim]")
+    console.print("  " + "  â€¢  ".join(parts) + "[/dim]")
     console.print()
 
 
@@ -935,7 +935,7 @@ def _handle_cache_stats(settings: "Settings", log: object) -> None:
     Shows:
       - Cache file path and existence
       - Entry count (valid vs expired)
-      - Hit rate (colour-coded: green ≥50%, yellow ≥20%, red <20%)
+      - Hit rate (colour-coded: green â‰¥50%, yellow â‰¥20%, red <20%)
       - File size on disk
       - TTL setting
       - Top-10 most recently cached entries (url, score, topics, age)
@@ -954,14 +954,14 @@ def _handle_cache_stats(settings: "Settings", log: object) -> None:
     stats = cache.stats()
 
     console.print()
-    console.print(Rule("[bold cyan]🗄️  AI Score Cache Statistics[/bold cyan]"))
+    console.print(Rule("[bold cyan]ðŸ—„ï¸  AI Score Cache Statistics[/bold cyan]"))
     console.print()
 
     cache_path = settings.data_dir / "cache" / "score_cache.json"
     if not cache_path.exists():
         console.print(
             "[yellow]Cache file not found.[/yellow]\n"
-            "Run [bold]news-radar --run[/bold] to populate the cache."
+            "Run [bold]feedflow-ai --run[/bold] to populate the cache."
         )
         console.print()
         return
@@ -1030,7 +1030,7 @@ def _handle_cache_stats(settings: "Settings", log: object) -> None:
             else f"[yellow]{score}[/yellow]" if score >= 4
             else f"[dim]{score}[/dim]"
         )
-        topics_str = ", ".join(entry.ai_topics[:3]) if entry.ai_topics else "[dim]—[/dim]"
+        topics_str = ", ".join(entry.ai_topics[:3]) if entry.ai_topics else "[dim]â€”[/dim]"
 
         entries_table.add_row(
             score_colored,
@@ -1043,7 +1043,7 @@ def _handle_cache_stats(settings: "Settings", log: object) -> None:
     console.print(entries_table)
     console.print()
     console.print(
-        f"[dim]Showing {len(display_entries)}/{len(valid_entries)} valid entries  •  "
+        f"[dim]Showing {len(display_entries)}/{len(valid_entries)} valid entries  â€¢  "
         f"Cache auto-expires after {DEFAULT_TTL_HOURS}h[/dim]"
     )
     console.print()
@@ -1064,9 +1064,9 @@ def _handle_cost_report(settings: "Settings", log: object) -> None:
       3. 30-day total spend footer
 
     Cost values are colour-coded by relative daily spend:
-      - Green  : ≤ avg spend / 2  (cheap day)
-      - Yellow : ≤ avg spend × 1.5
-      - Red    : > avg spend × 1.5 (expensive day)
+      - Green  : â‰¤ avg spend / 2  (cheap day)
+      - Yellow : â‰¤ avg spend Ã— 1.5
+      - Red    : > avg spend Ã— 1.5 (expensive day)
 
     If cost_log.jsonl does not exist yet, prompts the user to run the pipeline.
     """
@@ -1080,14 +1080,14 @@ def _handle_cost_report(settings: "Settings", log: object) -> None:
     ledger = CostLedger(settings.data_dir)
 
     console.print()
-    console.print(Rule("[bold cyan]💰  AI Cost Report[/bold cyan]"))
+    console.print(Rule("[bold cyan]ðŸ’°  AI Cost Report[/bold cyan]"))
     console.print()
 
     ledger_path = settings.data_dir / "cost_log.jsonl"
     if not ledger_path.exists():
         console.print(
             "[yellow]No cost data found.[/yellow]\n"
-            "Run [bold]news-radar --run[/bold] to start tracking costs."
+            "Run [bold]feedflow-ai --run[/bold] to start tracking costs."
         )
         console.print()
         return
@@ -1125,7 +1125,7 @@ def _handle_cost_report(settings: "Settings", log: object) -> None:
         else:
             cost_col = f"[green]{cost_str}[/green]"
 
-        dry_col = f"[dim]{row['dry_runs']}[/dim]" if row["dry_runs"] else "[dim]—[/dim]"
+        dry_col = f"[dim]{row['dry_runs']}[/dim]" if row["dry_runs"] else "[dim]â€”[/dim]"
 
         daily_table.add_row(
             row["date"],
@@ -1172,7 +1172,7 @@ def _handle_cost_report(settings: "Settings", log: object) -> None:
 
     console.print(
         f"  [dim]30-day total: [bold]${total_30d:.6f}[/bold]  "
-        f"({total_runs} runs · {total_tokens:,} tokens)[/dim]"
+        f"({total_runs} runs Â· {total_tokens:,} tokens)[/dim]"
     )
     console.print(
         f"  [dim]Cost log: {ledger_path}[/dim]"
@@ -1209,14 +1209,14 @@ def _handle_retry_stats(settings: "Settings", log: object) -> None:
     budget = RetryBudget(settings.data_dir, provider_name=provider_name)
 
     console.print()
-    console.print(Rule("[bold cyan]🔄  Retry Budget & Circuit Breaker History[/bold cyan]"))
+    console.print(Rule("[bold cyan]ðŸ”„  Retry Budget & Circuit Breaker History[/bold cyan]"))
     console.print()
 
     budget_path = settings.data_dir / "retry_budget.jsonl"
     if not budget_path.exists():
         console.print(
             "[yellow]No retry budget history found.[/yellow]\n"
-            "Run [bold]news-radar --run[/bold] to start tracking circuit events."
+            "Run [bold]feedflow-ai --run[/bold] to start tracking circuit events."
         )
         console.print()
         return
@@ -1272,7 +1272,7 @@ def _handle_retry_stats(settings: "Settings", log: object) -> None:
 
         old_val = str(row.get("old_value", "?"))
         new_val = str(row.get("new_value", "?"))
-        change = f"{old_val} → {new_val}"
+        change = f"{old_val} â†’ {new_val}"
 
         events_table.add_row(
             row.get("timestamp", "?"),
@@ -1326,7 +1326,7 @@ def _handle_preview_email(settings: "Settings", log: object) -> None:
     if briefing is None:
         console.print(
             "[yellow]No briefings found.[/yellow]\n"
-            "Run [bold]news-radar --run[/bold] first to generate a briefing."
+            "Run [bold]feedflow-ai --run[/bold] first to generate a briefing."
         )
         console.print()
         return
@@ -1368,7 +1368,7 @@ def _handle_preview_email(settings: "Settings", log: object) -> None:
 
 def main() -> None:
     """
-    Main entry point — called by the ``news-radar`` script and by
+    Main entry point â€” called by the ``feedflow-ai`` script and by
     ``python -m src.main``.
     """
     # ---- Parse arguments ----
@@ -1463,3 +1463,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

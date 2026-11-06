@@ -1,7 +1,7 @@
-"""
+﻿"""
 src/delivery/email_template.py
 ================================
-Email-optimized HTML renderer for the daily News Radar briefing.
+Email-optimized HTML renderer for the daily FeedFlow AI briefing.
 
 Why a separate renderer?
   Generic HTML pages use CSS classes and <style> blocks freely.
@@ -34,7 +34,7 @@ Usage:
     from src.delivery.email_template import render_email_html
 
     html_str = render_email_html(briefing)
-    # → self-contained email HTML, ready for MIMEText("html")
+    # â†’ self-contained email HTML, ready for MIMEText("html")
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ _FONT = "Arial, 'Helvetica Neue', Helvetica, sans-serif"
 
 
 def _score_color(score: int) -> str:
-    """Return a hex color for score 1-10 (green→yellow→red)."""
+    """Return a hex color for score 1-10 (greenâ†’yellowâ†’red)."""
     if score >= 8:
         return "#4ade80"   # bright green
     if score >= 6:
@@ -156,7 +156,7 @@ def render_email_html(briefing: "Briefing") -> str:
 
 
 def _render_head(date: str) -> str:
-    title = _esc(f"News Radar — {date}")
+    title = _esc(f"FeedFlow AI â€” {date}")
     return f"""\
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -169,7 +169,7 @@ def _render_head(date: str) -> str:
   </o:OfficeDocumentSettings></xml>
   <![endif]-->
   <style type="text/css">
-    /* Minimal reset — kept here as fallback for clients that support <style> */
+    /* Minimal reset â€” kept here as fallback for clients that support <style> */
     body, table, td, p, a {{ margin:0; padding:0; }}
     img {{ border:0; display:block; }}
     a {{ color:{_ACCENT}; text-decoration:none; }}
@@ -207,7 +207,7 @@ def _render_header(briefing: "Briefing") -> str:
                          text-transform:uppercase;color:{_MUTED};font-family:{_FONT};">Daily Briefing</p>
               <h1 style="margin:0;font-size:26px;font-weight:700;line-height:1.2;
                           color:{_TEXT};font-family:{_FONT};">
-                &#x1F4E1; News Radar
+                &#x1F4E1; FeedFlow AI
               </h1>
               <p style="margin:6px 0 0 0;font-size:14px;color:{_MUTED};font-family:{_FONT};">
                 {date_str} &nbsp;&middot;&nbsp; {count} stories
@@ -351,10 +351,11 @@ def _render_footer(briefing: "Briefing") -> str:
     <tr><td style="padding:20px 28px;background-color:#12163a;
                    border-top:1px solid {_BORDER};text-align:center;">
       <p style="margin:0 0 6px 0;font-size:12px;color:{_MUTED};font-family:{_FONT};">
-        &#x1F4E1; <strong style="color:{_TEXT};">News Radar</strong> &nbsp;&middot;&nbsp; {date_str}
+        &#x1F4E1; <strong style="color:{_TEXT};">FeedFlow AI</strong> &nbsp;&middot;&nbsp; {date_str}
       </p>
       <p style="margin:0;font-size:11px;color:#4a5068;font-family:{_FONT};">
         Generated {gen_time} &nbsp;&middot;&nbsp;
-        This email was sent by News Radar, your personal AI news curator.
+        This email was sent by FeedFlow AI, your personal AI news curator.
       </p>
     </td></tr>"""
+

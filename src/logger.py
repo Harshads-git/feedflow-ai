@@ -1,14 +1,14 @@
-"""
+﻿"""
 src/logger.py
 =============
-Centralised Rich-powered logger for the News Radar pipeline.
+Centralised Rich-powered logger for the FeedFlow AI pipeline.
 
 Why Rich over stdlib logging?
   - Colour-coded output with clear log levels
   - Automatic terminal width detection and wrapping
   - Syntax-highlighted tracebacks with local variables shown
   - Progress bars and spinners (used by the orchestrator)
-  - Zero-config — works out of the box, no handler setup needed
+  - Zero-config â€” works out of the box, no handler setup needed
 
 Usage anywhere in the codebase:
     from src.logger import get_logger
@@ -16,7 +16,7 @@ Usage anywhere in the codebase:
 
     log.info("Fetching sources...")
     log.debug("Item: %s", item.title)
-    log.warning("Rate limited — sleeping 5s")
+    log.warning("Rate limited â€” sleeping 5s")
     log.error("Scraper failed", exc_info=True)
     log.success("Briefing generated!")   # Rich bonus level
 """
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     pass
 
 # ---------------------------------------------------------------------------
-# Custom theme for News Radar branding
+# Custom theme for FeedFlow AI branding
 # ---------------------------------------------------------------------------
 
 _THEME = Theme(
@@ -84,7 +84,7 @@ _configured: bool = False
 
 
 def _build_handler(level: int) -> RichHandler:
-    """Build a RichHandler with News Radar settings."""
+    """Build a RichHandler with FeedFlow AI settings."""
     handler = RichHandler(
         console=console,
         level=level,
@@ -174,8 +174,8 @@ class NewsRadarLogger:
     Thin wrapper around ``logging.Logger`` with convenience methods.
 
     Adds:
-      - ``success()`` — green checkmark message (uses INFO level)
-      - ``section()`` — prints a separator with a phase header
+      - ``success()`` â€” green checkmark message (uses INFO level)
+      - ``section()`` â€” prints a separator with a phase header
       - Full pass-through of all stdlib logger methods
     """
 
@@ -223,13 +223,13 @@ class NewsRadarLogger:
         Print a visual separator marking the start of a pipeline phase.
 
         Example output:
-            ──────────────────── Phase: Fetching ────────────────────
+            â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Phase: Fetching â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         """
         console.rule(f"[phase]{title}[/phase]", style="dim")
 
     def pipeline_start(self, date: str, sources: int) -> None:
         """Log the standard pipeline start banner."""
-        console.rule("[bold cyan]>> News Radar Pipeline <<[/bold cyan]", style="cyan")
+        console.rule("[bold cyan]>> FeedFlow AI Pipeline <<[/bold cyan]", style="cyan")
         self._logger.info(
             "[phase]Starting briefing for[/phase] [count]%s[/count] "
             "with [count]%d[/count] sources",
@@ -240,7 +240,7 @@ class NewsRadarLogger:
     def pipeline_end(self, items: int, duration: float) -> None:
         """Log the standard pipeline completion banner."""
         self._logger.info(
-            "[success]Pipeline complete[/success] — "
+            "[success]Pipeline complete[/success] â€” "
             "[count]%d[/count] items in [count]%.1fs[/count]",
             items,
             duration,
@@ -259,3 +259,4 @@ class NewsRadarLogger:
 # Import-time configuration uses INFO level.
 # main.py will call configure_logging(settings.log_level) to override.
 configure_logging("INFO")
+
